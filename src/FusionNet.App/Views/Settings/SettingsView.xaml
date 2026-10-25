@@ -1,0 +1,665 @@
+﻿<shell:PageBase x:Class="FusionNet.App.Views.Settings.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:FusionNet.App.Shell"
+             xmlns:loc="clr-namespace:FusionNet.App.Localization"
+             xmlns:ctrl="clr-namespace:FusionNet.App.Controls"
+             xmlns:conv="clr-namespace:FusionNet.App.Converters"
+             Background="Transparent"
+             FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+        <conv:CountToVisibilityConverter x:Key="CountToVis" />
+
+        <Style x:Key="JournalStatePill" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding JournalStateKey}" Value="active">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="JournalStateText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDim}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding JournalStateKey}" Value="active">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ElevationPill" TargetType="Border" BasedOn="{StaticResource Pill.Warning}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElevationKey}" Value="elevated">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ElevationText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElevationKey}" Value="elevated">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- one on/off row -->
+        <Style x:Key="ToggleRow" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,13" />
+        </Style>
+        <Style x:Key="ToggleTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="ToggleHint" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Margin" Value="0,3,0,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+        <StackPanel Margin="0,0,0,26">
+
+            <!-- ============================================================ header -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource Text.PageTitle}" Text="{loc:T Page.Settings}" />
+                    <TextBlock Style="{StaticResource Text.PageSubtitle}" Text="{loc:T Page.Settings.Subtitle}" />
+                </StackPanel>
+                <Border Grid.Column="1" Style="{StaticResource Pill.Accent}" VerticalAlignment="Top">
+                    <TextBlock Style="{StaticResource Text.Caption}"
+                               Foreground="{DynamicResource Brush.Accent}"
+                               Text="{Binding VersionText}" />
+                </Border>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="360" />
+                </Grid.ColumnDefinitions>
+
+                <!-- ======================================================= left column -->
+                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+
+                    <!-- === appearance -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                       Text="{loc:T Set.AppearanceTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.AppearanceBody}"
+                                       Margin="0,3,0,0" TextWrapping="Wrap" />
+
+                            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Set.Accent}"
+                                       Margin="0,16,0,10" />
+                            <ItemsControl ItemsSource="{Binding Accents}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Background="Transparent" BorderThickness="0" Padding="0"
+                                                Cursor="Hand" Margin="0,0,16,0"
+                                                ToolTip="{Binding Label}"
+                                                Command="{Binding DataContext.SelectAccentCommand,
+                                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}">
+                                            <StackPanel>
+                                                <Grid Width="38" Height="38">
+                                                    <Ellipse Width="36" Height="36" Fill="{Binding Brush}">
+                                                        <Ellipse.Style>
+                                                            <Style TargetType="Ellipse">
+                                                                <Setter Property="Stroke" Value="Transparent" />
+                                                                <Setter Property="StrokeThickness" Value="2" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                        <Setter Property="Stroke" Value="{DynamicResource Brush.Text}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Ellipse.Style>
+                                                    </Ellipse>
+                                                    <TextBlock Style="{StaticResource Icon.Sm}" Text="{StaticResource GlyphCheck}"
+                                                               Foreground="{DynamicResource Brush.AccentInk}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVis}}" />
+                                                </Grid>
+                                                <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Label}"
+                                                           HorizontalAlignment="Center" Margin="0,5,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Style="{StaticResource SeparatorLine}" Margin="0,14,0,14" />
+
+                            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Set.Language}"
+                                       Margin="0,0,0,8" />
+                            <StackPanel Orientation="Horizontal">
+                                <ToggleButton Style="{StaticResource Btn.Chip}" Content="{loc:T Common.Arabic}"
+                                              IsChecked="{Binding IsArabicSelected, Mode=TwoWay}" />
+                                <ToggleButton Style="{StaticResource Btn.Chip}" Content="{loc:T Common.English}"
+                                              IsChecked="{Binding IsEnglishSelected, Mode=TwoWay}" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.LanguageHint}"
+                                       Margin="0,8,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === startup -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                       Text="{loc:T Set.StartupTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.StartupBody}"
+                                       Margin="0,3,0,14" TextWrapping="Wrap" />
+
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}"
+                                               Text="{loc:T Set.StartWithWindows}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}"
+                                               Text="{loc:T Set.StartWithWindowsHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding StartWithWindows, Mode=TwoWay}" />
+                            </Grid>
+
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}"
+                                               Text="{loc:T Set.MinimizeToTray}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}"
+                                               Text="{loc:T Set.MinimizeToTrayHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding MinimizeToTray, Mode=TwoWay}" />
+                            </Grid>
+
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}"
+                                               Text="{loc:T Set.ShowNotifications}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}"
+                                               Text="{loc:T Set.ShowNotificationsHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding ShowNotifications, Mode=TwoWay}" />
+                            </Grid>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}"
+                                               Text="{loc:T Set.ConfirmExitWhileActive}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}"
+                                               Text="{loc:T Set.ConfirmExitWhileActiveHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding ConfirmExitWhileActive, Mode=TwoWay}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === hotkey -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Set.HotkeyTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.HotkeyBody}"
+                                       Margin="0,3,0,0" TextWrapping="Wrap" />
+
+                            <Border x:Name="HotkeyCapture" Focusable="True" Padding="14" Margin="0,14,0,0"
+                                    PreviewKeyDown="OnHotkeyCapturePreviewKeyDown">
+                                <Border.Style>
+                                    <Style TargetType="Border" BasedOn="{StaticResource Panel}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                                                <Setter Property="BorderThickness" Value="2" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                        <TextBlock Style="{StaticResource Text.Caption}"
+                                                   Text="{loc:T Set.HotkeyCurrent}" />
+                                        <TextBlock Style="{StaticResource Text.Mono}" FontSize="20"
+                                                   Foreground="{DynamicResource Brush.Accent}"
+                                                   Text="{Binding HotkeyDisplay}" Margin="0,5,0,0" />
+                                        <TextBlock Style="{StaticResource Text.Caption}"
+                                                   Foreground="{DynamicResource Brush.Accent}"
+                                                   Text="{loc:T Set.HotkeyRecording}" Margin="0,6,0,0"
+                                                   Visibility="{Binding IsRecording, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Button Style="{StaticResource Btn.Soft}" Content="{loc:T Set.HotkeyRecord}"
+                                                Click="OnRecordHotkeyClick" Margin="0,0,8,0"
+                                                Visibility="{Binding IsRecording, Converter={StaticResource InverseBoolToVis}}" />
+                                        <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Common.Cancel}"
+                                                Command="{Binding CancelRecordCommand}"
+                                                Visibility="{Binding IsRecording, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <TextBlock Style="{StaticResource Text.Caption}"
+                                       Foreground="{DynamicResource Brush.Danger}"
+                                       Text="{Binding HotkeyError}" Margin="0,8,0,0" TextWrapping="Wrap"
+                                       Visibility="{Binding HasHotkeyError, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === fusion defaults -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                       Text="{loc:T Set.FusionTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.FusionBody}"
+                                       Margin="0,3,0,14" TextWrapping="Wrap" />
+
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.Firewall}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.FirewallHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding EnableFirewallBlocking, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.PauseServices}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.PauseServicesHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding PauseWindowsDownloadServices, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.Boost}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.BoostHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding BoostGameProcess, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.PowerPlan}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.PowerPlanHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding SwitchPowerPlan, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.ApplyTweaks}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.ApplyTweaksHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding ApplyLatencyTweaks, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.FlushDns}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.FlushDnsHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding FlushDnsOnEngage, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.PurgeMemory}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.PurgeMemoryHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding PurgeStandbyMemoryOnEngage, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.SuspendScope}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.SuspendScopeHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding SuspendAppsOnlyWhileGameRuns, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.AutoEngage}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.AutoEngageHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding AutoEngageOnGameStart, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid Style="{StaticResource ToggleRow}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.RestoreOnExit}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.RestoreOnExitHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding RestoreOnGameExit, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Style="{StaticResource ToggleTitle}" Text="{loc:T Set.AutoRestoreCrash}" />
+                                    <TextBlock Style="{StaticResource ToggleHint}" Text="{loc:T Set.AutoRestoreCrashHint}" />
+                                </StackPanel>
+                                <ctrl:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                   IsChecked="{Binding AutoRestoreOnCrash, Mode=TwoWay}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === services -->
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                       Text="{loc:T Set.ServicesTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.ServicesBody}"
+                                       Margin="0,3,0,14" TextWrapping="Wrap" />
+
+                            <ItemsControl ItemsSource="{Binding Services}" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox Grid.Column="0" Style="{StaticResource Input.CheckBox}"
+                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      VerticalAlignment="Top" Margin="0,2,6,0" />
+                                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                                <TextBlock Style="{StaticResource Text.Body}"
+                                                           Text="{Binding Name}" FontWeight="SemiBold" />
+                                                <TextBlock Style="{StaticResource Text.Caption}"
+                                                           Text="{Binding Description}" Margin="0,3,0,0"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                        VerticalAlignment="Top">
+                                                <Border Style="{StaticResource Pill.Accent}" Margin="0,0,6,0"
+                                                        Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock Style="{StaticResource Text.Caption}"
+                                                               Foreground="{DynamicResource Brush.Accent}"
+                                                               Text="{loc:T Common.Recommended}" />
+                                                </Border>
+                                                <Border Style="{StaticResource Pill.Warning}"
+                                                        Visibility="{Binding IsAdvanced, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock Style="{StaticResource Text.Caption}"
+                                                               Foreground="{DynamicResource Brush.Warning}"
+                                                               Text="{loc:T Common.Advanced}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.ServicesHint}"
+                                       Margin="0,2,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- ======================================================= right column -->
+                <StackPanel Grid.Column="1">
+
+                    <!-- === data & safety -->
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Set.DataTitle}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.DataBody}"
+                                       Margin="0,3,0,12" TextWrapping="Wrap" />
+
+                            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Set.DataFolder}" />
+                            <TextBlock Style="{StaticResource Text.Mono}" Text="{Binding DataDirectory}"
+                                       Foreground="{DynamicResource Brush.TextMuted}" Margin="0,5,0,0"
+                                       TextWrapping="Wrap" />
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Button Style="{StaticResource Btn.Soft}" Content="{loc:T Set.OpenFolder}"
+                                        Command="{Binding OpenDataFolderCommand}" Margin="0,0,8,0" />
+                                <Button Style="{StaticResource Btn.Soft}" Content="{loc:T Set.ExportSettings}"
+                                        Command="{Binding ExportSettingsCommand}" />
+                            </StackPanel>
+
+                            <Border Style="{StaticResource SeparatorLine}" Margin="0,14" />
+
+                            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Set.JournalTitle}" />
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.JournalSession}" Width="90" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Mono}"
+                                           Text="{Binding JournalSessionShort}"
+                                           Foreground="{DynamicResource Brush.Accent}" />
+                            </Grid>
+                            <Grid Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.JournalChanges}" Width="90" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Mono}"
+                                           Text="{Binding JournalEntryCount}"
+                                           Foreground="{DynamicResource Brush.Text}" />
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Border Style="{StaticResource JournalStatePill}">
+                                    <TextBlock Style="{StaticResource JournalStateText}"
+                                               Text="{Binding JournalStateLabel}" />
+                                </Border>
+                            </StackPanel>
+
+                            <Border Style="{StaticResource Card.Flat}" Margin="0,10,0,0"
+                                    BorderBrush="{DynamicResource Brush.WarningBorder}"
+                                    Visibility="{Binding HasPendingRestore, Converter={StaticResource BoolToVis}}">
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.Caption}"
+                                               Foreground="{DynamicResource Brush.Warning}"
+                                               Text="{loc:T Set.JournalPending}" TextWrapping="Wrap" />
+                                    <Button Style="{StaticResource Btn.Link}" Content="{loc:T Set.OpenActivity}"
+                                            Command="{Binding OpenActivityCommand}"
+                                            HorizontalAlignment="Left" Margin="0,6,0,0" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource SeparatorLine}" Margin="0,14" />
+
+                            <Button Style="{StaticResource Btn.Danger}" Content="{loc:T Set.ResetAll}"
+                                    Command="{Binding ResetAllCommand}" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === about -->
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="42" Height="42" CornerRadius="12"
+                                        Background="{DynamicResource Brush.AccentFaint}"
+                                        BorderBrush="{DynamicResource Brush.AccentBorder}" BorderThickness="1">
+                                    <TextBlock Style="{StaticResource Icon.Lg}" Text="{StaticResource GlyphShield}"
+                                               Foreground="{DynamicResource Brush.Accent}" />
+                                </Border>
+                                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource Text.Brand}" Text="{Binding ProductName}" />
+                                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding VersionText}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.BrandSubtitle}"
+                                       Margin="0,10,0,0" TextWrapping="Wrap" />
+
+                            <Border Style="{StaticResource SeparatorLine}" Margin="0,12" />
+
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Machine}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Text}" Text="{Binding MachineName}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Windows}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Text}" Text="{Binding WindowsText}"
+                                           TextWrapping="Wrap" />
+                            </Grid>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Cpu}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Text}" Text="{Binding CpuText}"
+                                           TextWrapping="Wrap" />
+                            </Grid>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Ram}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Text}" Text="{Binding RamText}" />
+                            </Grid>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Uptime}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Text}" Text="{Binding UptimeText}" />
+                            </Grid>
+                            <Grid Margin="0,0,0,7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.Permission}" Width="86" />
+                                <Border Grid.Column="1" Style="{StaticResource ElevationPill}"
+                                        HorizontalAlignment="Left">
+                                    <TextBlock Style="{StaticResource ElevationText}"
+                                               Text="{Binding ElevationLabel}" />
+                                </Border>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Style="{StaticResource Text.Caption}"
+                                           Text="{loc:T Set.HotkeyTitle}" Width="86" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Mono}"
+                                           Text="{Binding HotkeyDisplay}" />
+                            </Grid>
+
+                            <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Elevation.RestartElevated}"
+                                    Command="{Binding RestartElevatedCommand}"
+                                    HorizontalAlignment="Left" Margin="0,12,0,0"
+                                    Visibility="{Binding IsElevated, Converter={StaticResource InverseBoolToVis}}" />
+
+                            <Border Style="{StaticResource SeparatorLine}" Margin="0,12" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Set.Reversible}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</shell:PageBase>

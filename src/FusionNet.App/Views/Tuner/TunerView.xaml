@@ -1,0 +1,252 @@
+﻿<shell:PageBase x:Class="FusionNet.App.Views.Tuner.TunerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:FusionNet.App.Shell"
+             xmlns:loc="clr-namespace:FusionNet.App.Localization"
+             xmlns:ctrl="clr-namespace:FusionNet.App.Controls"
+             xmlns:conv="clr-namespace:FusionNet.App.Converters"
+             Background="Transparent"
+             FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:CountToVisibilityConverter x:Key="CountToVis" />
+        <conv:EmptyStringToVisibilityConverter x:Key="EmptyToVis" />
+
+        <!-- risk pill tinted by risk level -->
+        <Style x:Key="RiskPill" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RiskKey}" Value="safe">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RiskKey}" Value="moderate">
+                    <Setter Property="Background" Value="{DynamicResource Brush.WarningSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.WarningBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RiskKey}" Value="advanced">
+                    <Setter Property="Background" Value="{DynamicResource Brush.DangerSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.DangerBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RiskText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RiskKey}" Value="moderate">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RiskKey}" Value="advanced">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StatePill" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsApplied}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StateText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDim}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsApplied}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- one tweak card -->
+        <DataTemplate x:Key="TweakRowTemplate">
+            <Border Style="{StaticResource Card.Flat}" Margin="0,0,0,9">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,18,0">
+                        <WrapPanel>
+                            <TextBlock Style="{StaticResource Text.CardTitle}"
+                                       Text="{Binding Title}"
+                                       VerticalAlignment="Center" />
+                            <Border Style="{StaticResource RiskPill}" Margin="10,0,0,0">
+                                <TextBlock Style="{StaticResource RiskText}" Text="{Binding RiskLabel}" />
+                            </Border>
+                            <Border Style="{StaticResource Pill.Warning}" Margin="6,0,0,0"
+                                    Visibility="{Binding RequiresRestart, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Warning}"
+                                           Text="{loc:T Label.RestartRequired}" />
+                            </Border>
+                            <Border Style="{StaticResource StatePill}" Margin="6,0,0,0">
+                                <TextBlock Style="{StaticResource StateText}" Text="{Binding StateLabel}" />
+                            </Border>
+                        </WrapPanel>
+
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="{Binding Description}" Margin="0,7,0,0" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,9,0,0">
+                            <TextBlock Style="{StaticResource Text.Caption}"
+                                       Text="{loc:T Tuner.Expected}" VerticalAlignment="Center" />
+                            <TextBlock Style="{StaticResource Text.Mono}" Text="{Binding ExpectedText}"
+                                       Foreground="{DynamicResource Brush.Accent}" Margin="6,0,16,0" />
+                            <TextBlock Style="{StaticResource Text.Caption}"
+                                       Text="{loc:T Tuner.Current}" VerticalAlignment="Center" />
+                            <TextBlock Style="{StaticResource Text.Mono}" Text="{Binding CurrentText}" Margin="6,0,0,0" />
+                        </StackPanel>
+
+                        <TextBlock Style="{StaticResource Text.Caption}"
+                                   Foreground="{DynamicResource Brush.Danger}"
+                                   Text="{Binding ErrorText}"
+                                   Margin="0,6,0,0"
+                                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+
+                    <ctrl:ToggleSwitch Grid.Column="1"
+                                       VerticalAlignment="Top"
+                                       Margin="0,2,0,0"
+                                       IsChecked="{Binding IsOn, Mode=OneWay}"
+                                       Command="{Binding DataContext.ToggleTweakCommand,
+                                                 RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       CommandParameter="{Binding}"
+                                       ToolTip="{loc:T Tuner.Expected}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+        <StackPanel Margin="0,0,0,26">
+
+            <!-- ============================================================ header -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource Text.PageTitle}" Text="{loc:T Page.Tuner}" />
+                    <TextBlock Style="{StaticResource Text.PageSubtitle}" Text="{loc:T Page.Tuner.Subtitle}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Common.Refresh}"
+                            Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Tuner.RevertAll}"
+                            Command="{Binding RevertAllCommand}" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Btn.Primary}" Content="{loc:T Tuner.ApplyRecommended}"
+                            Command="{Binding ApplyRecommendedCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- busy strip -->
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,0,0,10"
+                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+
+            <!-- ============================================================ overview -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Tuner.SectionTitle}" />
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="{loc:T Tuner.SectionBody}" Margin="0,5,0,0" />
+                        <ProgressBar Maximum="{Binding TotalCount}" Value="{Binding AppliedCount, Mode=OneWay}"
+                                     Height="6" Margin="0,12,0,0" />
+                        <StackPanel Orientation="Horizontal" Margin="0,9,0,0">
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Summary}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text=" · " Visibility="{Binding StatusText, Converter={StaticResource EmptyToVis}}" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Warning}" Text="{Binding StatusText}" Visibility="{Binding StatusText, Converter={StaticResource EmptyToVis}}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Border Grid.Column="1" Style="{StaticResource Pill.Accent}" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource Text.Caption}"
+                                   Foreground="{DynamicResource Brush.Accent}"
+                                   Text="{Binding RecommendedHint}" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ============================================================ elevation -->
+            <Border Style="{StaticResource Card.Flat}" Margin="0,0,0,16"
+                    BorderBrush="{DynamicResource Brush.WarningBorder}"
+                    Visibility="{Binding ShowElevationBanner, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Style="{StaticResource Icon.Md}"
+                               Foreground="{DynamicResource Brush.Warning}"
+                               Text="{StaticResource GlyphAdmin}" Margin="0,0,12,0" />
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{loc:T Tuner.ElevationTitle}" />
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="{loc:T Tuner.ElevationBody}" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Style="{StaticResource Btn.Ghost}"
+                            Content="{loc:T Elevation.RestartElevated}"
+                            Command="{Binding RestartElevatedCommand}"
+                            VerticalAlignment="Center" Margin="12,0,0,0" />
+                </Grid>
+            </Border>
+
+            <!-- ============================================================ categories -->
+            <ItemsControl ItemsSource="{Binding Groups}"
+                          IsEnabled="{Binding CanInteract}"
+                          Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,0,0,16">
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{Binding Title}" />
+                                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Subtitle}"
+                                               Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Style="{StaticResource Pill}" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding Summary}" />
+                                </Border>
+                            </Grid>
+
+                            <ItemsControl ItemsSource="{Binding Rows}"
+                                          ItemTemplate="{StaticResource TweakRowTemplate}"
+                                          Focusable="False" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- empty state -->
+            <Border Style="{StaticResource Card}"
+                    Visibility="{Binding TotalCount, Converter={StaticResource CountToVis}, ConverterParameter=invert}">
+                <StackPanel HorizontalAlignment="Center" Margin="0,18">
+                    <TextBlock Style="{StaticResource Icon.Xl}" Text="{StaticResource GlyphTuner}" />
+                    <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Label.EmptyTitle}"
+                               HorizontalAlignment="Center" Margin="0,10,0,0" />
+                    <TextBlock Style="{StaticResource Text.Muted}" Text="{loc:T Tuner.NoTweaks}"
+                               HorizontalAlignment="Center" Margin="0,5,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</shell:PageBase>
+

@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>3.3.3</Version>
+    <FileVersion>3.3.3.0</FileVersion>
+    <AssemblyVersion>3.3.3.0</AssemblyVersion>
+    <Authors>FusionNet</Authors>
+    <Company>FusionNet</Company>
+    <Product>FusionNet Pro</Product>
+    <Description>FusionNet Pro - Unified gaming network optimizer, latency shield and focus mode for Windows.</Description>
+    <Copyright>Copyright © 2026 FusionNet</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CA1416;CS1591</NoWarn>
+    <DebugType>embedded</DebugType>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>
+

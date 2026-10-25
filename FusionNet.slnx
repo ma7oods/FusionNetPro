@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FusionNet.App/FusionNet.App.csproj" />
+    <Project Path="src/FusionNet.Core/FusionNet.Core.csproj" />
+    <Project Path="src/FusionNet.Windows/FusionNet.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FusionNet.Tests/FusionNet.Tests.csproj" />
+  </Folder>
+</Solution>

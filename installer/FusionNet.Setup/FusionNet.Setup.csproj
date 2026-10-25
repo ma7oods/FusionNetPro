@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>FusionNetPro-Setup</AssemblyName>
+    <RootNamespace>FusionNet.Setup</RootNamespace>
+    <ApplicationIcon>..\..\src\FusionNet.App\Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Load the native libraries straight from the bundle. Self-extract would stage them in
+         %TEMP% on every run, so the installer could not start on a locked-down temp folder. -->
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <Version>3.3.3</Version>
+    <FileVersion>3.3.3.0</FileVersion>
+    <AssemblyVersion>3.3.3.0</AssemblyVersion>
+    <Product>FusionNet Pro</Product>
+    <Company>FusionNet</Company>
+    <Description>FusionNet Pro installer</Description>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <NoWarn>$(NoWarn);CA1416;WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Produced by installer/build-installer.ps1 before this project is published. -->
+    <EmbeddedResource Include="payload\payload.zip" LogicalName="payload.zip" />
+  </ItemGroup>
+
+</Project>
+

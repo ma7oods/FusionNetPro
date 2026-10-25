@@ -1,0 +1,105 @@
+<shell:PageBase x:Class="FusionNet.App.Views.Dashboard.DashboardView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:loc="clr-namespace:FusionNet.App.Localization" xmlns:ctrl="clr-namespace:FusionNet.App.Controls"
+ xmlns:conv="clr-namespace:FusionNet.App.Converters" xmlns:shell="clr-namespace:FusionNet.App.Shell"
+ Background="Transparent" FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}">
+ <shell:PageBase.Resources>
+  <BooleanToVisibilityConverter x:Key="Vis.WhenTrue" />
+  <conv:InverseBooleanToVisibilityConverter x:Key="Vis.WhenFalse" />
+  <!-- One measurement column: label, value + unit, quality. Columns are separated by a hairline, not boxed. -->
+  <Style x:Key="Metric.Cell" TargetType="Border">
+   <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+   <Setter Property="BorderThickness" Value="0,0,1,0" />
+   <Setter Property="Padding" Value="20,4" />
+  </Style>
+ </shell:PageBase.Resources>
+ <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+  <StackPanel Margin="0,0,0,32">
+   <DockPanel Margin="0,0,0,24" LastChildFill="True">
+    <Button DockPanel.Dock="Right" Content="{loc:T Common.Refresh}" Command="{Binding RefreshCommand}" Style="{StaticResource Btn.Ghost}" VerticalAlignment="Top" Margin="16,0,0,0" />
+    <StackPanel><TextBlock Text="{loc:T Page.Dashboard}" Style="{StaticResource Text.PageTitle}" /><TextBlock Text="{loc:T Dash.OverviewSubtitle}" Style="{StaticResource Text.PageSubtitle}" /></StackPanel>
+   </DockPanel>
+
+   <!-- Session state leads: automatic Fusion Mode is the main way the app is used. -->
+   <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+    <StackPanel>
+     <DockPanel LastChildFill="True">
+      <Button DockPanel.Dock="Right" Content="{Binding EngageLabel}" ToolTip="{Binding EngageTooltip}" Command="{Binding ToggleFusionCommand}" Style="{StaticResource Btn.Primary}" VerticalAlignment="Top" Margin="16,0,0,0" />
+      <StackPanel>
+       <StackPanel Orientation="Horizontal">
+        <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="0,2,10,0">
+         <Ellipse.Style>
+          <Style TargetType="Ellipse">
+           <Setter Property="Fill" Value="{DynamicResource Brush.TextDim}" />
+           <Style.Triggers>
+            <DataTrigger Binding="{Binding IsArmed}" Value="True"><Setter Property="Fill" Value="{DynamicResource Brush.Success}" /></DataTrigger>
+           </Style.Triggers>
+          </Style>
+         </Ellipse.Style>
+        </Ellipse>
+        <TextBlock Text="{Binding StateTitle}" Style="{StaticResource Text.SectionTitle}" FontSize="20" />
+       </StackPanel>
+       <TextBlock Text="{Binding StateBody}" Style="{StaticResource Text.Muted}" Margin="0,6,0,0" />
+       <WrapPanel Margin="0,12,0,0">
+        <TextBlock Text="{loc:T Dash.DetectedTitle}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBlock Text="{Binding DetectedGameName}" Style="{StaticResource Text.Body}" FontWeight="SemiBold" VerticalAlignment="Center" />
+       </WrapPanel>
+      </StackPanel>
+     </DockPanel>
+     <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0" Margin="0,20,0,0" Padding="0,16,0,0">
+      <StackPanel>
+       <DockPanel LastChildFill="True">
+        <ctrl:ToggleSwitch DockPanel.Dock="Right" VerticalAlignment="Center" IsChecked="{Binding AutoEngageOnGameStart, Mode=TwoWay}" AutomationProperties.Name="{loc:T Dash.AutoEngage}" Margin="16,0,0,0" />
+        <TextBlock Text="{loc:T Dash.AutoEngage}" Style="{StaticResource Text.Body}" VerticalAlignment="Center" />
+       </DockPanel>
+       <DockPanel LastChildFill="True" Margin="0,10,0,0" Visibility="{Binding IsElevated, Converter={StaticResource Vis.WhenFalse}}">
+        <Button DockPanel.Dock="Right" Content="{loc:T Elevation.RestartElevated}" Command="{Binding RestartElevatedCommand}" Style="{StaticResource Btn.Ghost}" Margin="16,0,0,0" />
+        <TextBlock Text="{loc:T Dash.AutoEngageHelp}" Style="{StaticResource Text.Body}" Foreground="{DynamicResource Brush.Warning}" VerticalAlignment="Center" />
+       </DockPanel>
+      </StackPanel>
+     </Border>
+    </StackPanel>
+   </Border>
+
+   <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+    <StackPanel>
+     <TextBlock Text="{loc:T Dash.ConnectionWorkspace}" Style="{StaticResource Text.SectionTitle}" />
+     <TextBlock Text="{loc:T Dash.TargetScope}" Style="{StaticResource Text.Muted}" Margin="0,4,0,20" />
+     <UniformGrid Columns="4" Margin="-20,0,0,20">
+      <Border Style="{StaticResource Metric.Cell}"><StackPanel><TextBlock Text="{loc:T Unit.Ping}" Style="{StaticResource Text.Caption}" /><StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Left" Margin="0,6,0,4"><TextBlock Text="{Binding PingValue}" Style="{StaticResource Text.Metric}" /><TextBlock Text="ms" Style="{StaticResource Text.Caption}" Margin="6,0,0,6" VerticalAlignment="Bottom" /></StackPanel><TextBlock Text="{Binding PingQuality}" Style="{StaticResource Text.Caption}" /></StackPanel></Border>
+      <Border Style="{StaticResource Metric.Cell}"><StackPanel><TextBlock Text="{loc:T Unit.Jitter}" Style="{StaticResource Text.Caption}" /><StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Left" Margin="0,6,0,4"><TextBlock Text="{Binding JitterValue}" Style="{StaticResource Text.Metric}" /><TextBlock Text="ms" Style="{StaticResource Text.Caption}" Margin="6,0,0,6" VerticalAlignment="Bottom" /></StackPanel><TextBlock Text="{Binding JitterQuality}" Style="{StaticResource Text.Caption}" /></StackPanel></Border>
+      <Border Style="{StaticResource Metric.Cell}"><StackPanel><TextBlock Text="{loc:T Unit.Loss}" Style="{StaticResource Text.Caption}" /><StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Left" Margin="0,6,0,4"><TextBlock Text="{Binding LossValue}" Style="{StaticResource Text.Metric}" /><TextBlock Text="%" Style="{StaticResource Text.Caption}" Margin="6,0,0,6" VerticalAlignment="Bottom" /></StackPanel><TextBlock Text="{Binding LossQuality}" Style="{StaticResource Text.Caption}" /></StackPanel></Border>
+      <Border Style="{StaticResource Metric.Cell}" BorderThickness="0"><StackPanel><TextBlock Text="{loc:T Dash.AdapterRates}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding DownloadRate}" Style="{StaticResource Text.MetricSmall}" FlowDirection="LeftToRight" HorizontalAlignment="Left" Margin="0,10,0,4" /><TextBlock Text="{Binding UploadRate}" Style="{StaticResource Text.Mono}" FlowDirection="LeftToRight" HorizontalAlignment="Left" /></StackPanel></Border>
+     </UniformGrid>
+     <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0" Padding="0,16,0,0">
+      <StackPanel>
+       <DockPanel LastChildFill="True">
+        <ItemsControl DockPanel.Dock="Right" ItemsSource="{Binding Targets}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><ToggleButton Content="{Binding Target}" Style="{StaticResource Btn.Chip}" FlowDirection="LeftToRight" IsChecked="{Binding IsSelected,Mode=OneWay}" Command="{Binding SelectCommand}" ToolTip="{loc:T Dash.TargetTip}" Margin="8,0,0,8" /></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+        <WrapPanel VerticalAlignment="Center"><TextBlock Text="{Binding SelectedQuality}" Style="{StaticResource Text.Caption}" Margin="0,0,16,8" /><TextBlock Text="{loc:T Dash.RangeLabel}" Style="{StaticResource Text.Caption}" Margin="0,0,8,8" /><StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" Margin="0,0,0,8"><TextBlock Text="{Binding SelectedMin}" Style="{StaticResource Text.Mono}" /><TextBlock Text=" / " Style="{StaticResource Text.Mono}" /><TextBlock Text="{Binding SelectedMax}" Style="{StaticResource Text.Mono}" /><TextBlock Text=" ms" Style="{StaticResource Text.Mono}" /></StackPanel></WrapPanel>
+       </DockPanel>
+       <ctrl:Sparkline Height="96" Margin="0,8,0,0" Values="{Binding SelectedTargetHistory}" Stroke="{DynamicResource Brush.Accent}" MinimumRange="12" />
+       <TextBlock Text="{loc:T Dash.NoSamples}" Style="{StaticResource Text.Muted}" Visibility="{Binding HasSelectedData,Converter={StaticResource Vis.WhenFalse}}" />
+      </StackPanel>
+     </Border>
+    </StackPanel>
+   </Border>
+
+   <!-- Manual, reviewed Game Boost stays available as the secondary path. -->
+   <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,8,0,24" Margin="0,0,0,24">
+    <DockPanel LastChildFill="True">
+     <Button DockPanel.Dock="Right" Content="{loc:T Dash.ReviewSession}" ToolTip="{loc:T Dash.ReviewSequence}" Command="{Binding OpenGameBoostCommand}" Style="{StaticResource Btn.Ghost}" VerticalAlignment="Center" Margin="16,0,0,0" />
+     <StackPanel>
+      <TextBlock Text="{Binding GameBoostTitle}" Style="{StaticResource Text.CardTitle}" />
+      <TextBlock Text="{Binding GameBoostDetail}" Style="{StaticResource Text.Muted}" Margin="0,4,0,0" />
+     </StackPanel>
+    </DockPanel>
+   </Border>
+
+   <DockPanel Margin="0,0,0,12"><Button DockPanel.Dock="Right" Content="{loc:T Dash.ViewAll}" Command="{Binding ViewActivityCommand}" Style="{StaticResource Btn.Link}" /><TextBlock Text="{loc:T Dash.ActivityTitle}" Style="{StaticResource Text.SectionTitle}" VerticalAlignment="Center" /></DockPanel>
+   <ItemsControl ItemsSource="{Binding Activities}" Visibility="{Binding HasActivity,Converter={StaticResource Vis.WhenTrue}}"><ItemsControl.ItemTemplate><DataTemplate>
+    <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,12"><DockPanel><TextBlock DockPanel.Dock="Right" Text="{Binding Time}" Style="{StaticResource Text.Mono}" FlowDirection="LeftToRight" Margin="16,0,0,0" /><TextBlock Text="{Binding Message}" Style="{StaticResource Text.Body}" /></DockPanel></Border>
+   </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+   <TextBlock Text="{loc:T Dash.ActivityEmptyBody}" Style="{StaticResource Text.Muted}" Visibility="{Binding HasActivity,Converter={StaticResource Vis.WhenFalse}}" />
+  </StackPanel>
+ </ScrollViewer>
+</shell:PageBase>

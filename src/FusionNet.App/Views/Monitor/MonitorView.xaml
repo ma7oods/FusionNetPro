@@ -1,0 +1,590 @@
+﻿<shell:PageBase x:Class="FusionNet.App.Views.Monitor.MonitorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:FusionNet.App.Shell"
+             xmlns:loc="clr-namespace:FusionNet.App.Localization"
+             xmlns:ctrl="clr-namespace:FusionNet.App.Controls"
+             xmlns:conv="clr-namespace:FusionNet.App.Converters"
+             Background="Transparent"
+             FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:CountToVisibilityConverter x:Key="CountToVis" />
+
+        <!-- ============================================================ quality colours -->
+        <Style x:Key="QualityPill" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding QualityKey}" Value="excellent">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="good">
+                    <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="fair">
+                    <Setter Property="Background" Value="{DynamicResource Brush.WarningSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.WarningBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="poor">
+                    <Setter Property="Background" Value="{DynamicResource Brush.DangerSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.DangerBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="QualityText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDim}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding QualityKey}" Value="excellent">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="good">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="fair">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding QualityKey}" Value="poor">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ============================================================ severity colours -->
+        <Style x:Key="SeverityIcon" TargetType="TextBlock" BasedOn="{StaticResource Icon.Md}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="critical">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="warning">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="info">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Info}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SeverityPill" TargetType="Border" BasedOn="{StaticResource Pill}">
+            <Setter Property="Background" Value="{DynamicResource Brush.SuccessSoft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.SuccessBorder}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="critical">
+                    <Setter Property="Background" Value="{DynamicResource Brush.DangerSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.DangerBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="warning">
+                    <Setter Property="Background" Value="{DynamicResource Brush.WarningSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.WarningBorder}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="info">
+                    <Setter Property="Background" Value="{DynamicResource Brush.InfoSoft}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.InfoBorder}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SeverityText" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="critical">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="warning">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SeverityKey}" Value="info">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Info}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ============================================================ metric block -->
+        <Style x:Key="MetricLabel" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Margin" Value="0,0,0,2" />
+        </Style>
+        <Style x:Key="MetricValue" TargetType="TextBlock" BasedOn="{StaticResource Text.Mono}">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        </Style>
+
+        <!-- ============================================================ latency row -->
+        <DataTemplate x:Key="LatencyRowTemplate">
+            <Border Style="{StaticResource Panel}" Padding="14,12" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="168" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Text.Mono}"
+                                       FontFamily="{DynamicResource Font.Mono}"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource Brush.Text}"
+                                       Text="{Binding Target}" VerticalAlignment="Center" />
+                            <Border Style="{StaticResource QualityPill}" Margin="10,0,0,0">
+                                <TextBlock Style="{StaticResource QualityText}" Text="{Binding QualityLabel}" />
+                            </Border>
+                            <TextBlock Style="{StaticResource Text.Caption}" Margin="10,0,0,0"
+                                       VerticalAlignment="Center" Text="{Binding SamplesText}" />
+                        </StackPanel>
+
+                        <WrapPanel Margin="0,10,0,0">
+                            <StackPanel Margin="0,0,18,0">
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Min}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding MinText}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,18,0">
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Avg}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AvgText}"
+                                           Foreground="{DynamicResource Brush.Accent}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,18,0">
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Max}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding MaxText}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,18,0">
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Jitter}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding JitterText}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,0,18,0">
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Loss}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding LossText}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Last}" />
+                                <TextBlock Style="{StaticResource MetricValue}" Text="{Binding LastText}" />
+                            </StackPanel>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <ctrl:Sparkline Height="46"
+                                        Values="{Binding HistoryValues}"
+                                        Stroke="{DynamicResource Brush.Accent}"
+                                        Fill="{DynamicResource Brush.SparkGradient}"
+                                        MinimumRange="8" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,8,0">
+        <StackPanel Margin="0,0,0,26">
+
+            <!-- ============================================================ header -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Text.PageTitle}" Text="{loc:T Page.Monitor}" />
+                        <Border Style="{StaticResource Pill.Success}" Margin="12,0,0,0" VerticalAlignment="Center"
+                                Visibility="{Binding IsLive, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" Fill="{DynamicResource Brush.Success}"
+                                         VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Success}"
+                                           Text="{loc:T Common.Live}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.PageSubtitle}" Text="{loc:T Page.Monitor.Subtitle}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                    <Button Style="{StaticResource Btn.Soft}" Content="{Binding MonitoringButtonText}"
+                            Command="{Binding StartStopCommand}" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Common.Refresh}"
+                            Command="{Binding RefreshCommand}" />
+                </StackPanel>
+            </Grid>
+
+            <!-- ============================================================ adapter card -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon.Md}"
+                                           Text="{StaticResource GlyphGlobe}"
+                                           Foreground="{DynamicResource Brush.Accent}" Margin="0,0,9,0" />
+                                <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                           Text="{loc:T Mon.AdapterTitle}" VerticalAlignment="Center" />
+                                <Border Style="{StaticResource Pill.Accent}" Margin="10,0,0,0">
+                                    <TextBlock Style="{StaticResource Text.Caption}"
+                                               Foreground="{DynamicResource Brush.Accent}"
+                                               Text="{Binding AdapterTypeLabel}" />
+                                </Border>
+                                <Border Style="{StaticResource Pill}" Margin="6,0,0,0">
+                                    <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding AdapterStatus}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.CardTitle}" Text="{Binding AdapterName}"
+                                       Margin="0,10,0,0" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding AdapterDescription}"
+                                       Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" Style="{StaticResource Input.ComboBox}"
+                                  MinWidth="250" MaxWidth="320" VerticalAlignment="Top"
+                                  ItemsSource="{Binding Adapters}"
+                                  SelectedItem="{Binding SelectedAdapter, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
+                    <Border Style="{StaticResource SeparatorLine}" Margin="0,14,0,12" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,14,14">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.LinkSpeed}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding LinkSpeedText}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,14,14">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.IPv4Label}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterIpv4Text}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,14,14">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Gateway}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterGatewayText}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,0,14">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Mac}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterMacText}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Ssid}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterSsidText}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,14,0">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.DnsServers}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterDnsText}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,14,0">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Received}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterReceivedText}" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="3">
+                            <TextBlock Style="{StaticResource MetricLabel}" Text="{loc:T Mon.Sent}" />
+                            <TextBlock Style="{StaticResource MetricValue}" Text="{Binding AdapterSentText}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ============================================================ latency + throughput -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,16,0">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                           Text="{loc:T Mon.TargetsTitle}" />
+                                <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.TargetsBody}"
+                                           Margin="0,3,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Style="{StaticResource QualityPill}" VerticalAlignment="Top">
+                                <TextBlock Style="{StaticResource QualityText}" Text="{Binding QualityLabel}" />
+                            </Border>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding PingTargets}"
+                                      ItemTemplate="{StaticResource LatencyRowTemplate}"
+                                      Margin="0,14,0,0" Focusable="False" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Mon.ThroughputTitle}" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.ThroughputBody}"
+                                   Margin="0,3,0,0" TextWrapping="Wrap" />
+
+                        <StackPanel Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon.Sm}" Text="{StaticResource GlyphDownload}"
+                                           Foreground="{DynamicResource Brush.Success}" Margin="0,0,8,0" />
+                                <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.Download}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.MetricSmall}" Text="{Binding DownloadText}"
+                                       Foreground="{DynamicResource Brush.Success}" Margin="0,5,0,0" />
+                            <ctrl:Sparkline Height="42" Margin="0,6,0,0"
+                                            Values="{Binding DownloadValues}"
+                                            Stroke="{DynamicResource Brush.Success}"
+                                            Fill="{DynamicResource Brush.SparkGradient}"
+                                            MinimumRange="1024" />
+                        </StackPanel>
+
+                        <StackPanel Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon.Sm}" Text="{StaticResource GlyphUpload}"
+                                           Foreground="{DynamicResource Brush.Info}" Margin="0,0,8,0" />
+                                <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.Upload}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.MetricSmall}" Text="{Binding UploadText}"
+                                       Foreground="{DynamicResource Brush.Info}" Margin="0,5,0,0" />
+                            <ctrl:Sparkline Height="42" Margin="0,6,0,0"
+                                            Values="{Binding UploadValues}"
+                                            Stroke="{DynamicResource Brush.Info}"
+                                            Fill="{DynamicResource Brush.SparkGradient}"
+                                            MinimumRange="1024" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ============================================================ targets editor -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Mon.TargetEditorTitle}" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.TargetEditorBody}"
+                                   Margin="0,3,0,0" TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Mon.TargetsLabel}"
+                                   Margin="0,14,0,8" />
+                        <ItemsControl ItemsSource="{Binding ProbeTargets}" Focusable="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource Panel}" Padding="10,4" Margin="0,0,8,8">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Text.Mono}"
+                                                       Text="{Binding}" VerticalAlignment="Center" />
+                                            <Button Style="{StaticResource Btn.Icon}" Width="26" Height="26"
+                                                    Content="{StaticResource GlyphDelete}"
+                                                    Command="{Binding DataContext.RemoveTargetCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="{loc:T Mon.RemoveTarget}"
+                                                    Margin="6,0,0,0" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Grid Margin="0,6,0,0" MaxWidth="420" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="TargetInputBox" Grid.Column="0" Style="{StaticResource Input.TextBox}"
+                                     Text="{Binding TargetInput, UpdateSourceTrigger=PropertyChanged}"
+                                     FlowDirection="LeftToRight" Margin="0,0,8,0"
+                                     KeyDown="OnTargetInputKeyDown" />
+                            <Button Grid.Column="1" Style="{StaticResource Btn.Soft}"
+                                    Content="{loc:T Mon.AddTarget}"
+                                    Command="{Binding AddTargetCommand}" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource Text.SectionTitle}" Text="{loc:T Mon.Interval}" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding IntervalText}"
+                                   Margin="0,4,0,0" />
+                        <Slider Minimum="500" Maximum="10000" TickFrequency="500"
+                                IsSnapToTickEnabled="True" SmallChange="500" LargeChange="500"
+                                Value="{Binding IntervalMs, Mode=TwoWay}" Margin="0,10,0,0" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{loc:T Mon.IntervalHint}"
+                                   Margin="0,8,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ============================================================ diagnostics -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,18,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon.Md}" Text="{StaticResource GlyphMonitor}"
+                                           Foreground="{DynamicResource Brush.Violet}" Margin="0,0,9,0" />
+                                <TextBlock Style="{StaticResource Text.SectionTitle}"
+                                           Text="{loc:T Mon.DiagnosticsTitle}" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="{loc:T Mon.DiagnosticsBody}"
+                                       Margin="0,5,0,0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                            <Button Style="{StaticResource Btn.Ghost}" Content="{loc:T Mon.ExportReport}"
+                                    Command="{Binding ExportReportCommand}" Margin="0,0,8,0" />
+                            <Button Style="{StaticResource Btn.Primary}" Content="{Binding DiagnosticsButtonText}"
+                                    Command="{Binding RunDiagnosticsCommand}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <ProgressBar IsIndeterminate="True" Height="3" Margin="0,12,0,0"
+                                 Visibility="{Binding IsRunningDiagnostics, Converter={StaticResource BoolToVis}}" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Mon.Environment}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding EnvironmentLine}"
+                                   Margin="10,0,0,0" VerticalAlignment="Center" />
+                        <TextBlock Style="{StaticResource Text.Caption}" Text="{Binding LastRunText}"
+                                   Margin="14,0,0,0" VerticalAlignment="Center"
+                                   Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0"
+                                Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+                        <Border Style="{StaticResource Pill.Danger}" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Danger}"
+                                           Text="{loc:T Mon.Critical}" />
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Danger}"
+                                           Text="{Binding CriticalCount}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Pill.Warning}" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Warning}"
+                                           Text="{loc:T Mon.Warnings}" />
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Warning}"
+                                           Text="{Binding WarningCount}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Pill.Success}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Success}"
+                                           Text="{loc:T Mon.Passed}" />
+                                <TextBlock Style="{StaticResource Text.Caption}"
+                                           Foreground="{DynamicResource Brush.Success}"
+                                           Text="{Binding PassedCount}" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{loc:T Mon.FindingsTitle}"
+                               Margin="0,16,0,8"
+                               Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}" />
+
+                    <ItemsControl ItemsSource="{Binding Findings}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Panel}" Padding="13,11" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Style="{StaticResource SeverityIcon}"
+                                                   Text="{Binding Glyph}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                        <StackPanel Grid.Column="1" Margin="10,0,12,0">
+                                            <TextBlock Style="{StaticResource Text.CardTitle}" Text="{Binding Title}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Style="{StaticResource Text.Muted}" Text="{Binding Detail}"
+                                                       Margin="0,4,0,0" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0"
+                                                        Visibility="{Binding HasSuggestion, Converter={StaticResource BoolToVis}}">
+                                                <TextBlock Style="{StaticResource Text.Caption}"
+                                                           Text="{loc:T Mon.Suggestion}" />
+                                                <TextBlock Style="{StaticResource Text.Caption}"
+                                                           Foreground="{DynamicResource Brush.Accent}"
+                                                           Text="{Binding Suggestion}" Margin="6,0,0,0"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Style="{StaticResource SeverityPill}"
+                                                VerticalAlignment="Top">
+                                            <TextBlock Style="{StaticResource SeverityText}"
+                                                       Text="{Binding SeverityLabel}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Border Style="{StaticResource Card.Flat}" Margin="0,4,0,0"
+                            Visibility="{Binding Findings.Count, Converter={StaticResource CountToVis}, ConverterParameter=invert}">
+                        <StackPanel HorizontalAlignment="Center" Margin="0,12">
+                            <TextBlock Style="{StaticResource Icon.Lg}" Text="{StaticResource GlyphMonitor}" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="{loc:T Mon.NoFindings}"
+                                       HorizontalAlignment="Center" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Grid Margin="0,12,0,0"
+                          Visibility="{Binding ShowElevationBanner, Converter={StaticResource BoolToVis}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Style="{StaticResource Icon.Sm}"
+                                   Text="{StaticResource GlyphAdmin}"
+                                   Foreground="{DynamicResource Brush.Warning}" Margin="0,0,8,0" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource Text.Caption}"
+                                   Text="{loc:T Mon.LimitedMode}" VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                        <Button Grid.Column="2" Style="{StaticResource Btn.Link}"
+                                Content="{loc:T Elevation.RestartElevated}"
+                                Command="{Binding RestartElevatedCommand}" Margin="10,0,0,0" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</shell:PageBase>

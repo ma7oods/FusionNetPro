@@ -1,0 +1,149 @@
+<Window x:Class="FusionNet.App.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:loc="clr-namespace:FusionNet.App.Localization" xmlns:ctrl="clr-namespace:FusionNet.App.Controls" xmlns:models="clr-namespace:FusionNet.Core.Models;assembly=FusionNet.Core" Title="FusionNet Pro" Width="1500" Height="960" MinWidth="1080" MinHeight="680" WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize" Background="{DynamicResource Brush.Window}" UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Ideal" FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}">
+  <WindowChrome.WindowChrome>
+    <WindowChrome CaptionHeight="54" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+  </WindowChrome.WindowChrome>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="54" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <!-- ======================================================= TITLE BAR -->
+    <Grid Grid.Row="0" Background="#01000000">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="18,0,0,0">
+        <Border Width="30" Height="30" CornerRadius="8" Background="{DynamicResource Brush.AccentFaint}">
+          <Image Source="/Assets/logo.png" Width="26" Height="26" RenderOptions.BitmapScalingMode="HighQuality" />
+        </Border>
+        <TextBlock Text="{loc:T App.Name}" Style="{StaticResource Text.Brand}" Margin="10,0,0,0" VerticalAlignment="Center" />
+        <Border Width="1" Height="16" Background="{DynamicResource Brush.Border}" Margin="14,0" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding CurrentPageTitle}" Style="{StaticResource Text.Muted}" VerticalAlignment="Center" FontSize="12.5" />
+      </StackPanel>
+      <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True">
+        <Button Style="{StaticResource Btn.Window}" Command="{Binding RestartElevatedCommand}" ToolTip="{Binding ElevationText}" Visibility="{Binding IsLimitedMode, Converter={StaticResource BoolToVis}}">
+          <TextBlock Text="{StaticResource GlyphAdmin}" FontFamily="{DynamicResource Font.Icon}" FontSize="13" Foreground="{DynamicResource Brush.Warning}" FlowDirection="LeftToRight" />
+        </Button>
+        <Button Style="{StaticResource Btn.Window}" Command="{Binding ToggleLanguageCommand}" ToolTip="{Binding LanguageTooltip}">
+          <TextBlock Text="{Binding LanguageToggleText}" FontFamily="{DynamicResource Font.UI}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" FlowDirection="LeftToRight" />
+        </Button>
+        <Button x:Name="HelpButton" Style="{StaticResource Btn.Window}" Click="HelpButton_Click" ToolTip="{loc:T TitleBar.Help}">
+          <TextBlock Text="{StaticResource GlyphInfo}" FontFamily="{DynamicResource Font.Icon}" FontSize="13" FlowDirection="LeftToRight" />
+        </Button>
+        <Button Style="{StaticResource Btn.Window}" Command="{Binding OpenSettingsCommand}" ToolTip="{loc:T TitleBar.Settings}">
+          <TextBlock Text="{StaticResource GlyphSettings}" FontFamily="{DynamicResource Font.Icon}" FontSize="13" FlowDirection="LeftToRight" />
+        </Button>
+        <Border Width="1" Height="18" Background="{DynamicResource Brush.Border}" Margin="6,0" VerticalAlignment="Center" />
+        <Button Style="{StaticResource Btn.Window}" Click="MinimizeButton_Click" ToolTip="{loc:T TitleBar.Minimize}">
+          <TextBlock Text="{StaticResource GlyphMinimize}" FontFamily="{DynamicResource Font.Icon}" FontSize="10" FlowDirection="LeftToRight" />
+        </Button>
+        <Button Style="{StaticResource Btn.Window}" Click="MaximizeButton_Click" ToolTip="{loc:T TitleBar.Maximize}">
+          <TextBlock x:Name="MaximizeGlyph" Text="{StaticResource GlyphMaximize}" FontFamily="{DynamicResource Font.Icon}" FontSize="10" FlowDirection="LeftToRight" />
+        </Button>
+        <Button Style="{StaticResource Btn.WindowClose}" Click="CloseButton_Click" ToolTip="{loc:T TitleBar.Close}">
+          <TextBlock Text="{StaticResource GlyphClose}" FontFamily="{DynamicResource Font.Icon}" FontSize="10" FlowDirection="LeftToRight" />
+        </Button>
+      </StackPanel>
+    </Grid>
+    <Border Grid.Row="0" Height="1" VerticalAlignment="Bottom" Background="{DynamicResource Brush.Border}" IsHitTestVisible="False" />
+    <!-- ======================================================= BODY -->
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="240" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <!-- ============================================ SIDEBAR -->
+      <Border Grid.Column="0" Background="{DynamicResource Brush.Sidebar}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0">
+        <Grid Margin="16,16,16,12">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border Grid.Row="0" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="8,4,8,20" Margin="0,0,0,8">
+            <StackPanel>
+              <TextBlock Text="{Binding GameBoostStateText}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" />
+              <Button Content="{loc:T Shell.PrepareGame}" Command="{Binding OpenGameBoostCommand}" Style="{StaticResource Btn.Soft}" Margin="0,12,0,0" />
+            </StackPanel>
+          </Border>
+          <!-- navigation -->
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,-8,0">
+            <ItemsControl ItemsSource="{Binding NavGroups}" Margin="0,0,8,0">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,0,0,2">
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource Text.Caption}" Margin="14,16,0,8" />
+                    <ItemsControl ItemsSource="{Binding Items}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                          <ToggleButton Style="{StaticResource Btn.Nav}" IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                            <StackPanel Orientation="Horizontal">
+                              <TextBlock Text="{Binding Glyph}" Style="{StaticResource Icon.Md}" Margin="0,0,12,0" Opacity="0.95" />
+                              <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontSize="14" TextWrapping="Wrap" />
+                            </StackPanel>
+                          </ToggleButton>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+          <!-- footer -->
+          <StackPanel Grid.Row="2" Margin="0,12,0,0">
+            <Expander xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Header="{loc:T Shell.AdvancedFusion}" Foreground="{DynamicResource Brush.TextMuted}" Margin="0,0,0,12">
+              <StackPanel Margin="0,8">
+                <TextBlock Text="{loc:T Shell.LegacyHint}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" />
+                <Button Style="{StaticResource Btn.Ghost}" Content="{Binding FusionButtonText}" Command="{Binding ToggleFusionCommand}" Margin="0,8,0,0" />
+              </StackPanel>
+            </Expander>
+            <Border Style="{StaticResource Pill.Warning}" Padding="11,8" Margin="0,0,0,8" Visibility="{Binding HasPendingRestore, Converter={StaticResource BoolToVis}}">
+              <StackPanel>
+                <TextBlock Text="{Binding PendingRestoreText}" Style="{StaticResource Text.Caption}" Foreground="{DynamicResource Brush.Warning}" TextWrapping="Wrap" />
+                <Button Style="{StaticResource Btn.Link}" Content="{loc:T Common.Restore}" Margin="0,4,0,0" HorizontalAlignment="Left" Command="{Binding RestoreSessionCommand}" FontSize="11" />
+              </StackPanel>
+            </Border>
+            <Button Style="{StaticResource Btn.Ghost}" Padding="10,9" Command="{Binding RestartElevatedCommand}" HorizontalContentAlignment="Left">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{StaticResource GlyphAdmin}" FontFamily="{DynamicResource Font.Icon}" FontSize="12" VerticalAlignment="Center" FlowDirection="LeftToRight">
+                  <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource Icon.Sm}">
+                      <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLimitedMode}" Value="True">
+                          <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="{Binding ElevationText}" Style="{StaticResource Text.Caption}" Margin="9,0,0,0" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+            <Grid Margin="2,10,2,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0" Text="{loc:T App.Tagline}" Style="{StaticResource Text.Caption}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,8,0" />
+              <TextBlock Grid.Column="1" Text="{Binding VersionText}" Style="{StaticResource Text.Caption}" TextWrapping="NoWrap" />
+            </Grid>
+          </StackPanel>
+        </Grid>
+      </Border>
+      <!-- ============================================ PAGE AREA -->
+      <Grid Grid.Column="1" Background="Transparent">
+        <ContentControl x:Name="PageHost" Content="{Binding CurrentPage}" Margin="32,24,24,0" />
+        <!-- shell overlays (toasts, onboarding, help).
+                     The layer itself stays click-through (transparent backgrounds) but toast
+                     cards must remain hit-testable so click-to-dismiss keeps working. -->
+        <Grid x:Name="OverlayLayer" Panel.ZIndex="100">
+          <ctrl:ToastHost x:Name="Toasts" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,26,22" />
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

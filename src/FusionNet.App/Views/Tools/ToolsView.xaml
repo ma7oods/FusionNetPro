@@ -1,0 +1,49 @@
+<shell:PageBase x:Class="FusionNet.App.Views.Tools.ToolsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:shell="clr-namespace:FusionNet.App.Shell" xmlns:loc="clr-namespace:FusionNet.App.Localization"
+ FlowDirection="{Binding Source={x:Static loc:Loc.Instance}, Path=FlowDirection}" Background="Transparent">
+ <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <StackPanel Margin="0,0,8,24">
+   <TextBlock Text="{loc:T Tools.Ui.Title}" Style="{StaticResource Text.PageTitle}" />
+   <TextBlock Text="{loc:T Tools.Ui.Subtitle}" Style="{StaticResource Text.PageSubtitle}" />
+   <WrapPanel Margin="0,16,0,18">
+    <Button Content="{loc:T Tools.Ui.Cancel}" Command="{Binding CancelCommand}" Style="{StaticResource Btn.Ghost}" />
+    <TextBlock Text="{loc:T Tools.Ui.ReadOnly}" Style="{StaticResource Text.Caption}" Margin="14,0" VerticalAlignment="Center" />
+   </WrapPanel>
+   <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+    <StackPanel>
+     <TextBlock Text="{loc:T Tools.Ui.DnsTitle}" Style="{StaticResource Text.SectionTitle}" />
+     <TextBlock Text="{loc:T Tools.Ui.DnsDetails}" Style="{StaticResource Text.Muted}" Margin="0,8,0,14" />
+     <WrapPanel>
+      <StackPanel Width="250" Margin="0,0,12,12"><TextBlock Text="{loc:T Tools.Ui.Domain}" Style="{StaticResource Text.Body}" /><TextBox Text="{Binding Host,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Input.TextBox}" FlowDirection="LeftToRight" AutomationProperties.Name="{loc:T Tools.Ui.DomainAutomation}" Margin="0,6,0,0" /></StackPanel>
+      <StackPanel Width="190" Margin="0,0,12,12"><TextBlock Text="{loc:T Tools.Ui.Server}" Style="{StaticResource Text.Body}" /><TextBox Text="{Binding Server,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Input.TextBox}" FlowDirection="LeftToRight" AutomationProperties.Name="{loc:T Tools.Ui.ServerAutomation}" Margin="0,6,0,0" /></StackPanel>
+      <StackPanel Width="110" Margin="0,0,12,12"><TextBlock Text="{loc:T Tools.Ui.RecordType}" Style="{StaticResource Text.Body}" /><ComboBox ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding RecordType,Mode=TwoWay}" Style="{StaticResource Input.ComboBox}" FlowDirection="LeftToRight" AutomationProperties.Name="{loc:T Tools.Ui.RecordTypeAutomation}" Margin="0,6,0,0" /></StackPanel>
+      <Button Content="{loc:T Tools.Ui.Inspect}" Command="{Binding LookupCommand}" Style="{StaticResource Btn.Primary}" Margin="0,24,0,12" VerticalAlignment="Top" />
+     </WrapPanel>
+     <TextBlock Text="{Binding DnsStatus}" Style="{StaticResource Text.Body}" Margin="0,8,0,14" />
+     <ItemsControl ItemsSource="{Binding Records}"><ItemsControl.ItemTemplate><DataTemplate>
+      <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,12">
+       <StackPanel FlowDirection="LeftToRight"><TextBlock Style="{StaticResource Text.Body}" Text="{Binding Name}" /><TextBlock Style="{StaticResource Text.Caption}"><Run Text="{Binding Type,Mode=OneWay}" /><Run Text="  TTL: " /><Run Text="{Binding TtlSeconds,Mode=OneWay}" /></TextBlock><TextBlock Text="{Binding Value}" Style="{StaticResource Text.Mono}" TextWrapping="Wrap" Margin="0,5,0,0" /></StackPanel>
+      </Border>
+     </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    </StackPanel>
+   </Border>
+   <Border Style="{StaticResource Card}" Margin="0,0,0,18">
+    <StackPanel>
+     <TextBlock Text="{loc:T Tools.Ui.HardwareTitle}" Style="{StaticResource Text.SectionTitle}" />
+     <TextBlock Text="{loc:T Tools.Ui.HardwareDetails}" Style="{StaticResource Text.Muted}" Margin="0,8,0,12" />
+     <Button Content="{loc:T Tools.Ui.RefreshHardware}" Command="{Binding HardwareCommand}" Style="{StaticResource Btn.Ghost}" HorizontalAlignment="Left" />
+     <TextBlock Text="{Binding HardwareStatus}" Style="{StaticResource Text.Body}" Margin="0,12" />
+     <ItemsControl ItemsSource="{Binding Sensors}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
+      <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,16" Width="244" Margin="0,0,24,8"><StackPanel><TextBlock Text="{Binding Name}" Style="{StaticResource Text.CardTitle}" TextWrapping="Wrap" /><TextBlock Text="{Binding Value}" Style="{StaticResource Text.MetricSmall}" FlowDirection="LeftToRight" Margin="0,8" /><TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" FlowDirection="LeftToRight" /></StackPanel></Border>
+     </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+    </StackPanel>
+   </Border>
+   <TextBlock Text="{loc:T Tools.Ui.Sources}" Style="{StaticResource Text.SectionTitle}" Margin="0,0,0,12" />
+   <TextBlock Text="{Binding SourceStatus}" Style="{StaticResource Text.Body}" Margin="0,0,0,12" />
+   <ItemsControl ItemsSource="{Binding Sources}"><ItemsControl.ItemTemplate><DataTemplate>
+    <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,20"><StackPanel><TextBlock Text="{Binding Name}" Style="{StaticResource Text.CardTitle}" /><TextBlock Text="{Binding Status}" Foreground="{DynamicResource Brush.Accent}" Margin="0,5" /><TextBlock Text="{Binding Purpose}" Style="{StaticResource Text.Body}" /><TextBlock Text="{Binding License}" Style="{StaticResource Text.Caption}" Margin="0,7" /><Button Content="{loc:T Tools.Ui.OfficialProject}" Style="{StaticResource Btn.Link}" HorizontalAlignment="Left" Command="{Binding DataContext.OpenSourceCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" /></StackPanel></Border>
+   </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+  </StackPanel>
+ </ScrollViewer>
+</shell:PageBase>

@@ -1,0 +1,50 @@
+# Build output (obj/project.assets.json holds absolute local paths)
+bin/
+obj/
+.vs/
+*.user
+dist/
+installer/payload/
+installer/publish/
+installer/FusionNet.Setup/payload/
+*.exe
+*.log
+*.zip
+
+# Local agent/session notes (machine paths, personal context)
+.claude/
+.cache/
+.impeccable/questions/
+AGENTS.md
+CLAUDE.md
+CURRENT_WORK.md
+PROJECT_HANDOFF.md
+HANDOFF_*.md
+tasks/
+docs/HANDOFF.md
+docs/handoff/
+docs/DEVELOPMENT_STATUS.md
+docs/DESIGN_SKILLS_SETUP.md
+docs/design-skills-installation.json
+docs/GITHUB_TOOLS_3_2.md
+docs/COMPLETION_AUDIT_3_2_2.md
+docs/RELEASE_3_1_0_CHECKS.md
+
+# Real-machine captures and third-party images
+docs/references/
+docs/screenshots/
+docs/screenshot-dashboard.png
+qa/screenshots/*
+!qa/screenshots/*-offline.png
+
+# QA run outputs and live evidence (only the check scripts are source)
+qa/.tmp/
+qa/build.lock
+qa/_explorerinstall/
+qa/_installer-safety-*/
+qa/checkpoints/
+qa/release-*/
+qa/*.json
+qa/*.md
+qa/*.txt
+qa/*.png

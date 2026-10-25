@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-24T11:59:20.906Z",
+  "title": "Design System: FusionNetPro",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Action Blue",
+        "tonalRamp": [
+          "oklch(15% 0.0458 252.28)",
+          "oklch(26.4% 0.0923 252.28)",
+          "oklch(37.9% 0.1273 252.28)",
+          "oklch(49.3% 0.1458 252.28)",
+          "oklch(60.7% 0.1458 252.28)",
+          "oklch(72.1% 0.1273 252.28)",
+          "oklch(83.6% 0.0923 252.28)",
+          "oklch(95% 0.0458 252.28)"
+        ]
+      },
+      "accent-secondary": {
+        "role": "primary",
+        "displayName": "Companion Blue",
+        "tonalRamp": [
+          "oklch(15% 0.0381 244.75)",
+          "oklch(26.4% 0.0769 244.75)",
+          "oklch(37.9% 0.1061 244.75)",
+          "oklch(49.3% 0.1215 244.75)",
+          "oklch(60.7% 0.1215 244.75)",
+          "oklch(72.1% 0.1061 244.75)",
+          "oklch(83.6% 0.0769 244.75)",
+          "oklch(95% 0.0381 244.75)"
+        ]
+      },
+      "accent-ink": {
+        "role": "neutral",
+        "displayName": "Deep Action Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0083 233.62)",
+          "oklch(26.4% 0.0167 233.62)",
+          "oklch(37.9% 0.0231 233.62)",
+          "oklch(49.3% 0.0264 233.62)",
+          "oklch(60.7% 0.0264 233.62)",
+          "oklch(72.1% 0.0231 233.62)",
+          "oklch(83.6% 0.0167 233.62)",
+          "oklch(95% 0.0083 233.62)"
+        ]
+      },
+      "bg-deep": {
+        "role": "neutral",
+        "displayName": "Charcoal Ground Deep",
+        "tonalRamp": [
+          "oklch(15% 0.0050 244.58)",
+          "oklch(26.4% 0.0100 244.58)",
+          "oklch(37.9% 0.0138 244.58)",
+          "oklch(49.3% 0.0158 244.58)",
+          "oklch(60.7% 0.0158 244.58)",
+          "oklch(72.1% 0.0138 244.58)",
+          "oklch(83.6% 0.0100 244.58)",
+          "oklch(95% 0.0050 244.58)"
+        ]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Charcoal Ground",
+        "tonalRamp": [
+          "oklch(15% 0.0055 245.07)",
+          "oklch(26.4% 0.0111 245.07)",
+          "oklch(37.9% 0.0154 245.07)",
+          "oklch(49.3% 0.0176 245.07)",
+          "oklch(60.7% 0.0176 245.07)",
+          "oklch(72.1% 0.0154 245.07)",
+          "oklch(83.6% 0.0111 245.07)",
+          "oklch(95% 0.0055 245.07)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Slate Work Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0070 243.33)",
+          "oklch(26.4% 0.0140 243.33)",
+          "oklch(37.9% 0.0194 243.33)",
+          "oklch(49.3% 0.0222 243.33)",
+          "oklch(60.7% 0.0222 243.33)",
+          "oklch(72.1% 0.0194 243.33)",
+          "oklch(83.6% 0.0140 243.33)",
+          "oklch(95% 0.0070 243.33)"
+        ]
+      },
+      "surface-alt": {
+        "role": "neutral",
+        "displayName": "Slate Alternate",
+        "tonalRamp": [
+          "oklch(15% 0.0082 244.30)",
+          "oklch(26.4% 0.0164 244.30)",
+          "oklch(37.9% 0.0227 244.30)",
+          "oklch(49.3% 0.0260 244.30)",
+          "oklch(60.7% 0.0260 244.30)",
+          "oklch(72.1% 0.0227 244.30)",
+          "oklch(83.6% 0.0164 244.30)",
+          "oklch(95% 0.0082 244.30)"
+        ]
+      },
+      "surface-hover": {
+        "role": "neutral",
+        "displayName": "Slate Hover",
+        "tonalRamp": [
+          "oklch(15% 0.0097 241.62)",
+          "oklch(26.4% 0.0195 241.62)",
+          "oklch(37.9% 0.0270 241.62)",
+          "oklch(49.3% 0.0309 241.62)",
+          "oklch(60.7% 0.0309 241.62)",
+          "oklch(72.1% 0.0270 241.62)",
+          "oklch(83.6% 0.0195 241.62)",
+          "oklch(95% 0.0097 241.62)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Structural Line",
+        "tonalRamp": [
+          "oklch(15% 0.0083 240.20)",
+          "oklch(26.4% 0.0168 240.20)",
+          "oklch(37.9% 0.0232 240.20)",
+          "oklch(49.3% 0.0265 240.20)",
+          "oklch(60.7% 0.0265 240.20)",
+          "oklch(72.1% 0.0232 240.20)",
+          "oklch(83.6% 0.0168 240.20)",
+          "oklch(95% 0.0083 240.20)"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Structural Line",
+        "tonalRamp": [
+          "oklch(15% 0.0107 234.97)",
+          "oklch(26.4% 0.0216 234.97)",
+          "oklch(37.9% 0.0298 234.97)",
+          "oklch(49.3% 0.0341 234.97)",
+          "oklch(60.7% 0.0341 234.97)",
+          "oklch(72.1% 0.0298 234.97)",
+          "oklch(83.6% 0.0216 234.97)",
+          "oklch(95% 0.0107 234.97)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Control Outline",
+        "tonalRamp": [
+          "oklch(15% 0.0093 239.91)",
+          "oklch(26.4% 0.0188 239.91)",
+          "oklch(37.9% 0.0259 239.91)",
+          "oklch(49.3% 0.0296 239.91)",
+          "oklch(60.7% 0.0296 239.91)",
+          "oklch(72.1% 0.0259 239.91)",
+          "oklch(83.6% 0.0188 239.91)",
+          "oklch(95% 0.0093 239.91)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Reading Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0013 236.50)",
+          "oklch(26.4% 0.0026 236.50)",
+          "oklch(37.9% 0.0036 236.50)",
+          "oklch(49.3% 0.0041 236.50)",
+          "oklch(60.7% 0.0041 236.50)",
+          "oklch(72.1% 0.0036 236.50)",
+          "oklch(83.6% 0.0026 236.50)",
+          "oklch(95% 0.0013 236.50)"
+        ]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Supporting Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0059 237.82)",
+          "oklch(26.4% 0.0118 237.82)",
+          "oklch(37.9% 0.0163 237.82)",
+          "oklch(49.3% 0.0187 237.82)",
+          "oklch(60.7% 0.0187 237.82)",
+          "oklch(72.1% 0.0163 237.82)",
+          "oklch(83.6% 0.0118 237.82)",
+          "oklch(95% 0.0059 237.82)"
+        ]
+      },
+      "text-dim": {
+        "role": "neutral",
+        "displayName": "Caption Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0083 235.46)",
+          "oklch(26.4% 0.0168 235.46)",
+          "oklch(37.9% 0.0232 235.46)",
+          "oklch(49.3% 0.0266 235.46)",
+          "oklch(60.7% 0.0266 235.46)",
+          "oklch(72.1% 0.0232 235.46)",
+          "oklch(83.6% 0.0168 235.46)",
+          "oklch(95% 0.0083 235.46)"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Measured Success",
+        "tonalRamp": [
+          "oklch(15% 0.0474 163.22)",
+          "oklch(26.4% 0.0956 163.22)",
+          "oklch(37.9% 0.1319 163.22)",
+          "oklch(49.3% 0.1510 163.22)",
+          "oklch(60.7% 0.1510 163.22)",
+          "oklch(72.1% 0.1319 163.22)",
+          "oklch(83.6% 0.0956 163.22)",
+          "oklch(95% 0.0474 163.22)"
+        ]
+      },
+      "warning": {
+        "role": "semantic",
+        "displayName": "Review Amber",
+        "tonalRamp": [
+          "oklch(15% 0.0508 84.43)",
+          "oklch(26.4% 0.1024 84.43)",
+          "oklch(37.9% 0.1413 84.43)",
+          "oklch(49.3% 0.1618 84.43)",
+          "oklch(60.7% 0.1618 84.43)",
+          "oklch(72.1% 0.1413 84.43)",
+          "oklch(83.6% 0.1024 84.43)",
+          "oklch(95% 0.0508 84.43)"
+        ]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Failure Rose",
+        "tonalRamp": [
+          "oklch(15% 0.0513 22.22)",
+          "oklch(26.4% 0.1035 22.22)",
+          "oklch(37.9% 0.1427 22.22)",
+          "oklch(49.3% 0.1635 22.22)",
+          "oklch(60.7% 0.1635 22.22)",
+          "oklch(72.1% 0.1427 22.22)",
+          "oklch(83.6% 0.1035 22.22)",
+          "oklch(95% 0.0513 22.22)"
+        ]
+      },
+      "info": {
+        "role": "semantic",
+        "displayName": "Information Blue",
+        "tonalRamp": [
+          "oklch(15% 0.0443 254.62)",
+          "oklch(26.4% 0.0893 254.62)",
+          "oklch(37.9% 0.1232 254.62)",
+          "oklch(49.3% 0.1411 254.62)",
+          "oklch(60.7% 0.1411 254.62)",
+          "oklch(72.1% 0.1232 254.62)",
+          "oklch(83.6% 0.0893 254.62)",
+          "oklch(95% 0.0443 254.62)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "page-title": {
+        "displayName": "Page title",
+        "purpose": "Text.PageTitle; native page identity."
+      },
+      "section-title": {
+        "displayName": "Section title",
+        "purpose": "Text.SectionTitle; grouped work."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Text.Body; wrapping content."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Text.Caption; source and supporting text."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Text.Metric; numeric measurement with nearby units."
+      },
+      "metric-small": {
+        "displayName": "Small metric",
+        "purpose": "Text.MetricSmall; rates and context counts."
+      },
+      "mono": {
+        "displayName": "Technical details",
+        "purpose": "Text.Mono; LTR paths, addresses and resource details."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "toggle-thumb",
+        "value": "20 DIP translation; 160ms; CubicEase EaseOut",
+        "purpose": "Native ToggleSwitch checked/unchecked animation in Themes/Controls.xaml."
+      }
+    ],
+    "breakpoints": [],
+    "platform": {
+      "name": "Windows WPF",
+      "runtime": ".NET 10",
+      "units": "DIP; CSS px in frontmatter and preview correspond at 96 DPI",
+      "sources": [
+        "src/FusionNet.App/Themes/Colors.xaml",
+        "src/FusionNet.App/Themes/Styles.xaml",
+        "src/FusionNet.App/Themes/Controls.xaml",
+        "src/FusionNet.App/Services/ToastService.cs",
+        "src/FusionNet.App/MainWindow.xaml",
+        "src/FusionNet.App/Views/Dashboard/DashboardView.xaml",
+        "src/FusionNet.App/Views/Security/LocalMonitorPanel.xaml",
+        "src/FusionNet.App/Views/Tools/ToolsView.xaml"
+      ],
+      "preview": "HTML/CSS snippets are visual translations, not WPF templates or tested native behaviors. Tonal ramps are synthesized OKLCH preview metadata, not shipping tokens or presets.",
+      "layout": "1500x960 initial shell, minimum 1080x680; 54-DIP chrome, fixed 240-DIP sidebar, stretch page with wrapping groups and vertical scrolling. No width breakpoint switches. 790-DIP captures are isolated pages.",
+      "focus": "FocusRing: 2-DIP accent, 8-DIP radius, margin -3; explicit on primary shared controls. Full keyboard traversal not exercised.",
+      "palette": "ThemeService replaces accent endpoints, alpha derivatives and spark gradient for cyan/violet/emerald/amber/rose. Status and neutral colors remain independent.",
+      "limitations": [
+        "Scoped two-fix disposition is not a whole-UI ship verdict.",
+        "Monitor/tools interface and consent resources are bilingual; raw evidence, approved snapshots and AI output keep their original language.",
+        "No final user visual approval or live keyboard/runtime validation.",
+        "DPI, high contrast and all preset/state combinations are unverified.",
+        "No live scan, Firewall/task/ETW, API, installer or in-game validation in this pass."
+      ],
+      "provenance": "Code-led; original logo retained; no new shipping raster."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "WPF Btn.Primary translated for preview; native MinHeight is 40 DIP.",
+      "html": "<button class=\"ds-primary\" type=\"button\">مراجعة جلسة اللعب</button>",
+      "css": ".ds-primary{min-height:40px;padding:10px 18px;border:0;border-radius:10px;background:#5AA9FF;color:#04121A;font:700 13px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-primary:hover{opacity:.88}.ds-primary:active{opacity:.72}.ds-primary:disabled{opacity:.38;cursor:default}.ds-primary:focus-visible,.ds-ghost:focus-visible,.ds-field:focus-visible,.ds-nav:focus-visible,.ds-tab:focus-visible {outline:2px solid #5AA9FF;outline-offset:3px;}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "WPF Btn.Ghost outlined secondary action.",
+      "html": "<button class=\"ds-ghost\" type=\"button\">إيقاف واسترجاع</button>",
+      "css": ".ds-ghost{min-height:40px;padding:9px 16px;border:1px solid #607785;border-radius:10px;background:transparent;color:#F3F6F8;font:600 13px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-ghost:hover{opacity:.88}.ds-ghost:active{opacity:.72}.ds-ghost:disabled{opacity:.38;cursor:default}.ds-primary:focus-visible,.ds-ghost:focus-visible,.ds-field:focus-visible,.ds-nav:focus-visible,.ds-tab:focus-visible {outline:2px solid #5AA9FF;outline-offset:3px;}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Enabled WPF Input.TextBox outline with a persistent label; LTR technical value.",
+      "html": "<label class=\"ds-label\" dir=\"rtl\">النطاق<input class=\"ds-field\" dir=\"ltr\" value=\"example.test\"></label>",
+      "css": ".ds-label{display:grid;gap:6px;color:#F3F6F8;font:14px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif}.ds-field{padding:8px 11px;border:1px solid #8295A3;border-radius:9px;background:#26333E;color:#F3F6F8;font:13px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;caret-color:#5AA9FF}.ds-field:hover{border-color:#8295A3}.ds-field:focus{border-color:#5AA9FF}.ds-field:disabled{opacity:.45}.ds-primary:focus-visible,.ds-ghost:focus-visible,.ds-field:focus-visible,.ds-nav:focus-visible,.ds-tab:focus-visible {outline:2px solid #5AA9FF;outline-offset:3px;}"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Btn.Nav at rest and checked. CSS current state previews WPF selection; it does not implement routing.",
+      "html": "<nav class=\"ds-navigation\" dir=\"rtl\" aria-label=\"التنقل\"><button class=\"ds-nav\" aria-current=\"page\">لوحة القيادة</button><button class=\"ds-nav\">Game Boost</button></nav>",
+      "css": ".ds-navigation{display:grid;gap:4px;width:208px;background:#10171D;padding:12px}.ds-nav{position:relative;text-align:start;padding:9px 12px;border:0;border-radius:10px;background:transparent;color:#BECBD4;font:600 14px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-nav:hover{background:#30414E;color:#F3F6F8}.ds-nav[aria-current=\"page\"]{background:rgba(90,169,255,.0784);color:#5AA9FF}.ds-nav[aria-current=\"page\"]::before{position:absolute;content:\"\";inset-inline-start:1px;top:50%;transform:translateY(-50%);width:3px;height:18px;border-radius:2px;background:#5AA9FF}.ds-primary:focus-visible,.ds-ghost:focus-visible,.ds-field:focus-visible,.ds-nav:focus-visible,.ds-tab:focus-visible {outline:2px solid #5AA9FF;outline-offset:3px;}"
+    },
+    {
+      "name": "Target Chip",
+      "kind": "chip",
+      "refersTo": "target-chip",
+      "description": "Btn.Chip selected target. Focus uses browser native outline because source does not assign FocusRing here.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\" type=\"button\">192.0.2.1</button>",
+      "css": ".ds-chip{padding:6px 13px;border:1px solid #364550;border-radius:999px;background:transparent;color:#BECBD4;font:600 12px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-chip:hover{background:#30414E;color:#F3F6F8}.ds-chip[aria-pressed=\"true\"]{background:rgba(90,169,255,.149);border-color:rgba(90,169,255,.4);color:#5AA9FF}.ds-chip:focus-visible{outline:auto}"
+    },
+    {
+      "name": "Work Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "WPF Card groups one work unit; no decorative shadow or hover lift.",
+      "html": "<section class=\"ds-card\" dir=\"rtl\"><h3 class=\"ds-card-title\">قياس الاتصال</h3><p class=\"ds-card-copy\">قياس الهدف المحدد؛ لا يمثل بالضرورة خادم اللعبة.</p></section>",
+      "css": ".ds-card{padding:24px;border:1px solid #364550;border-radius:12px;background:#202B34;color:#F3F6F8;font:14px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif}.ds-card-title{font-size:16px;font-weight:600;margin:0}.ds-card-copy{color:#BECBD4;font-size:13px;margin:6px 0 0}"
+    },
+    {
+      "name": "Workspace Tabs",
+      "kind": "nav",
+      "refersTo": "workspace-tab",
+      "description": "Workspace.Tab selection anatomy. Preview has no WPF keyboard or content-switching behavior.",
+      "html": "<div class=\"ds-tabs\" dir=\"rtl\" role=\"tablist\" aria-label=\"أقسام الفحص\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\">العمليات</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">التنبيهات</button></div>",
+      "css": ".ds-tabs{display:flex;flex-wrap:wrap;gap:4px}.ds-tab{padding:12px 16px;border:0;border-bottom:2px solid transparent;border-radius:6px;background:transparent;color:#BECBD4;font:13px \"Segoe UI Variable Text\",\"Segoe UI\",sans-serif;cursor:pointer}.ds-tab[aria-selected=\"true\"]{border-bottom-color:#5AA9FF;background:rgba(90,169,255,.0784);color:#F3F6F8}.ds-tab:hover{background:#30414E}.ds-primary:focus-visible,.ds-ghost:focus-visible,.ds-field:focus-visible,.ds-nav:focus-visible,.ds-tab:focus-visible {outline:2px solid #5AA9FF;outline-offset:3px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Measured Wayfinding",
+    "overview": "The visual world is a quiet native Windows workspace: charcoal ground, slate work surfaces, blue actions and explicit semantic status. The selected Sleek reference contributes consistent spacing and restrained interaction; the implementation adapts it to WPF and Arabic text rather than importing web fonts or a web framework.\n\nNamed data, source labels and current state carry the hierarchy. This code-led replacement is documented as implemented, not as final user visual approval. The FusionNetPro name and existing logo remain. Low ambient light during play is a design assumption.",
+    "keyCharacteristics": [
+      "Charcoal and slate tonal layers with blue action emphasis.",
+      "Native Segoe text and explicit LTR technical values inside an RTL-capable shell.",
+      "Wrapping groups, vertical scrolling and progressive detail.",
+      "Words accompany status; missing measurements remain unavailable."
+    ],
+    "rules": [
+      {
+        "name": "Resource Ownership",
+        "body": "Read colors and control styles through DynamicResource and the existing named styles. ThemeService owns accent replacement; a new screen must not hard-code a competing accent.",
+        "section": "colors"
+      },
+      {
+        "name": "Evidence Beside Data",
+        "body": "Keep units, source and availability with a measurement. Interface throughput and connection counts must not be presented as measured per-process transfer or game-server latency.",
+        "section": "typography"
+      },
+      {
+        "name": "Quiet Surface",
+        "body": "Use tonal surfaces and thin dividers for ordinary workspace structure. A card groups a real work unit; do not add a card around every label or metric.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do reuse the named WPF brushes and styles, preserving DynamicResource accent updates.",
+      "Do keep Arabic prose RTL and paths, addresses, timestamps and technical measurements explicitly LTR where the source does.",
+      "Do wrap action groups and long evidence, retaining source and unavailable-state text.",
+      "Do keep status words, consent review, stop and restore actions readable at compact sizes.",
+      "Do verify native renders and actual keyboard behavior before claiming accessibility completion."
+    ],
+    "donts": [
+      "Don't import the Sleek sample web palette, Inter fonts or browser layout rules over native resources.",
+      "Don't turn unknown readings into zeroes, connection counts into transfer rates, or synthetic fixtures into product claims.",
+      "Don't make the accent preset alter success, warning or danger semantics.",
+      "Don't promote legacy glyph icons, eyebrow styles or unreviewed interaction states into new decorative patterns.",
+      "Don't claim final user approval, full English localization or live OS integration validation from offline captures."
+    ]
+  }
+}
