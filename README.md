@@ -13,7 +13,7 @@ Get the latest installer from **[Releases](../../releases/latest)**: `FusionNetP
 - Installs per user. No admin rights are needed to install.
 - The shortcuts start the app as administrator, because Fusion Mode changes firewall rules and services. Windows asks for approval each time you open it.
 - **Updating:** download the newer setup from Releases and run it. It replaces the old version in place and keeps your settings.
-- The files are not code-signed, so Windows SmartScreen may warn you the first time. Check the hash against `SHA256SUMS.txt` in the release.
+- Releases are built and tested by GitHub Actions from the tagged source. The files are not code-signed yet (see the [code signing policy](CODE_SIGNING_POLICY.md)), so Windows SmartScreen may warn you the first time. Check the hash against `SHA256SUMS.txt` in the release.
 
 ## Features
 
@@ -32,8 +32,8 @@ Requirements: Windows 10/11 x64 and the [.NET 10 SDK](https://dotnet.microsoft.c
 ```powershell
 dotnet build FusionNet.slnx -c Release          # app and tests
 dotnet run --project qa/TestRunner -c Release   # unit tests
-dotnet run qa/installer-safety.cs               # offline installer checks
 powershell -File installer/build-installer.ps1  # packages into dist/
+dotnet run qa/installer-safety.cs               # offline installer checks (needs the package step first)
 ```
 
 Most scripts in `qa/` are offline checks you run with `dotnet run qa/<name>.cs`. Do **not** run `live-local-monitor-checks.cs`, `network-smoke.cs` or `test-installer*.ps1` on a machine you care about: they touch the real system.
@@ -41,15 +41,14 @@ Most scripts in `qa/` are offline checks you run with `dotnet run qa/<name>.cs`.
 ## Releasing a new version
 
 1. Bump the version everywhere `3.3.3` appears, mainly `Directory.Build.props`, `installer/build-installer.ps1`, `installer/FusionNet.Setup/FusionNet.Setup.csproj`, `InstallEngine.cs`, `SetupForm.cs` and `qa/release-checks.cs`. Find them all with `git grep 3.3.3`.
-2. Build and check:
+2. Commit, then push a matching tag:
    ```powershell
-   powershell -File installer/build-installer.ps1
-   dotnet run qa/release-checks.cs
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
    ```
-3. Publish the release:
-   ```powershell
-   gh release create vX.Y.Z dist/FusionNetPro-Setup-X.Y.Z.exe dist/FusionNetPro-X.Y.Z.exe dist/FusionNetPro-X.Y.Z-portable.zip dist/SHA256SUMS.txt --generate-notes
-   ```
+3. The [Release workflow](.github/workflows/release.yml) builds, tests and packages it on GitHub's servers, then publishes the release with the installer, standalone exe, portable zip and `SHA256SUMS.txt`. It fails if the tag and the version differ.
+
+To try a build without publishing, run the workflow manually from the Actions tab.
 
 ## Project layout
 
@@ -63,6 +62,6 @@ Most scripts in `qa/` are offline checks you run with `dotnet run qa/<name>.cs`.
 
 ## License
 
-[MIT](LICENSE). Third-party components are listed in [THIRD-PARTY-NOTICES.txt](src/FusionNet.App/Assets/THIRD-PARTY-NOTICES.txt).
+[MIT](LICENSE). Third-party components are listed in [THIRD-PARTY-NOTICES.txt](src/FusionNet.App/Assets/THIRD-PARTY-NOTICES.txt). What the app sends over the network is listed in the privacy section of the [code signing policy](CODE_SIGNING_POLICY.md#privacy-policy).
 
 Use it at your own risk: the app changes firewall rules, services and process priorities while a mode is active.

@@ -1,0 +1,106 @@
+# Builds, tests and packages FusionNet Pro on GitHub's servers, so every release binary
+# comes straight from the tagged source. Push a tag vX.Y.Z to publish a release;
+# run it manually (Actions > Release > Run workflow) to build and test without publishing.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Check the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          $version = [regex]::Match((Get-Content Directory.Build.props -Raw), '<Version>([^<]+)</Version>').Groups[1].Value
+          if ("v$version" -ne $env:TAG) { throw "Tag $env:TAG does not match Directory.Build.props version $version." }
+
+      - name: Build
+        run: dotnet build FusionNet.slnx -c Release --nologo
+
+      - name: Unit tests
+        run: dotnet run --project qa/TestRunner -c Release
+
+      - name: Package
+        shell: powershell
+        run: ./installer/build-installer.ps1
+
+      # The setup project embeds payload.zip, which Package creates.
+      - name: Installer safety checks
+        run: dotnet run qa/installer-safety.cs
+
+      - name: Release checks
+        run: dotnet run qa/release-checks.cs
+
+      - name: Upload unsigned files
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: FusionNetPro-unsigned
+          if-no-files-found: error
+          path: |
+            dist/FusionNetPro-*.exe
+            dist/FusionNetPro-*-portable.zip
+            dist/SHA256SUMS.txt
+
+  # Runs only after SignPath approves the project and the repository has the variable
+  # SIGNPATH_ORGANIZATION_ID and the secret SIGNPATH_API_TOKEN (see CODE_SIGNING_POLICY.md).
+  sign:
+    needs: build
+    if: vars.SIGNPATH_ORGANIZATION_ID != ''
+    runs-on: windows-latest
+    steps:
+      - uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FusionNetPro-signed
+          if-no-files-found: error
+          path: signed/
+
+  publish:
+    needs: [build, sign]
+    if: >-
+      always() && startsWith(github.ref, 'refs/tags/v') &&
+      needs.build.result == 'success' &&
+      (needs.sign.result == 'success' || needs.sign.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.sign.result == 'success' && 'FusionNetPro-signed' || 'FusionNetPro-unsigned' }}
+          path: release
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: gh release create "$TAG" release/* --repo "$REPO" --title "FusionNet Pro ${TAG#v}" --generate-notes --verify-tag
