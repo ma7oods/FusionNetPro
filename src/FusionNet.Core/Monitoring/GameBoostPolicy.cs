@@ -36,10 +36,12 @@ public static class GameBoostPolicy
         .OrderByDescending(group => group.Sum(process => (process.UploadBytesPerSecond ?? 0) + (process.DownloadBytesPerSecond ?? 0)))
         .Take(5).Select(group => group.OrderByDescending(process => (process.UploadBytesPerSecond ?? 0) + (process.DownloadBytesPerSecond ?? 0)).First()).ToArray();
     // A launcher may provide DRM or sign-in for the running game; only Riot titles are known to run without Steam/Epic/etc.
+    // Riot is judged by executable name, so a custom game that points at a Riot exe counts as Riot.
     public static IEnumerable<string> LauncherGuard(IEnumerable<GameProfile> runningGames)
     {
+        var riot = GameCatalog.All.Where(game => game.Id is "valorant" or "league-of-legends").ToArray();
         var games = runningGames.ToArray();
-        return games.Length > 0 && games.All(game => game.Id is "valorant" or "league-of-legends") ? []
+        return games.Length > 0 && games.All(game => game.ProcessNames.All(name => riot.Any(r => r.MatchesProcess(name)))) ? []
             : ManagedAppCatalog.All.Where(app => app.Category == ManagedAppCatalog.Launchers).SelectMany(app => app.ProcessNames);
     }
     public static string? BlockReason(ProcessObservation process, IEnumerable<string> extraProtectedNames, string windowsDirectory, string selfPath)

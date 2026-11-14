@@ -77,8 +77,7 @@ public static class OptimizationPlanner
 
         // Only Riot titles run without their launcher, and voice chat must never be frozen.
         // Every running game counts, not just the detected one: a Steam game beside VALORANT still needs Steam.
-        var runningGames = GameCatalog.All
-            .Concat(GameCatalog.BuildWatchList(settings))
+        var runningGames = GameCatalog.AllKnown(settings)
             .Concat(game is null ? [] : [game])
             .Where(g => g.MatchesAnyProcess(runningNames))
             .DistinctBy(g => g.Id, StringComparer.OrdinalIgnoreCase);

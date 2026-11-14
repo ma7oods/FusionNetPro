@@ -22,11 +22,15 @@ public sealed class ElevationService : IElevationService
     // The elevated copy waits only a few seconds for this instance's single-instance mutex.
     private readonly Action? _restarted;
 
+    // A second click while this copy is still closing must not open a second elevated copy.
+    private bool _restartLaunched;
+
     public ElevationService(Action? restarted = null) => _restarted = restarted;
 
     public bool TryRestartElevated(string? arguments = null)
     {
         if (IsElevated) return false;
+        if (_restartLaunched) return true;
 
         var executable = Environment.ProcessPath;
         if (string.IsNullOrWhiteSpace(executable) || !File.Exists(executable)) return false;
@@ -48,6 +52,7 @@ public sealed class ElevationService : IElevationService
 
             using var process = Process.Start(startInfo);
             if (process is null) return false;
+            _restartLaunched = true;
             _restarted?.Invoke();
             return true;
         }

@@ -126,6 +126,10 @@ public static class GameCatalog
         return selectedCustom is not null ? custom : Profiles.Concat(custom).ToArray();
     }
 
+    /// <summary>Built-in games plus every custom game, disabled ones too: launcher protection must see any game that runs.</summary>
+    public static IEnumerable<GameProfile> AllKnown(FusionSettings settings) => Profiles.Concat(settings.CustomGames
+        .Where(game => game is not null && !string.IsNullOrWhiteSpace(game.ExecutablePath)).Select(game => game.ToProfile()));
+
     /// <summary>Finds the first running game; when several match, the pinned profile wins.</summary>
     public static GameProfile? DetectRunning(IReadOnlyList<GameProfile> watchList, IEnumerable<string> runningProcessNames, string? pinnedGameId)
     {

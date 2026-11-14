@@ -284,7 +284,7 @@ public partial class App : Application
     /// This path deliberately bypasses the interactive close-confirmation pipeline: automation
     /// must never wait on a modal dialog.
     /// </summary>
-    private async Task CaptureAndExitAsync(Window window, string outPath)
+    private async Task CaptureAndExitAsync(MainWindow window, string outPath)
     {
         try
         {
@@ -323,6 +323,7 @@ public partial class App : Application
         {
             // Never run the window's Closing handlers in automation mode: the app may ask the
             // user to confirm restoring an active session, which would hang a headless run.
+            window.AllowCloseWithoutRestore();
             Shutdown(0);
         }
     }

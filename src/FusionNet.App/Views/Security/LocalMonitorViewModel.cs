@@ -155,8 +155,14 @@ public sealed class LocalMonitorViewModel : ViewModelBase
     private ImmutableArray<string> GameNames() => GameCatalog.BuildWatchList(_services.Settings)
         .SelectMany(game => game.ProcessNames).Distinct(StringComparer.OrdinalIgnoreCase).ToImmutableArray();
     // The preview carries these names, so the elevated worker re-checks the same launcher protection.
-    private ImmutableArray<string> ProtectedNames() => GameNames().AddRange(GameBoostPolicy.LauncherGuard(GameCatalog.All.Concat(GameCatalog.BuildWatchList(_services.Settings))
-        .Where(game => (_report?.Processes ?? []).Any(process => game.MatchesProcess(process.Name))))).Distinct(StringComparer.OrdinalIgnoreCase).ToImmutableArray();
+    // Live processes join the last scan: a Steam game opened after the scan still needs Steam at Start.
+    private ImmutableArray<string> ProtectedNames()
+    {
+        var running = _services.Processes.GetProcesses().Select(process => process.ProcessName)
+            .Concat((_report?.Processes ?? []).Select(process => process.Name)).ToArray();
+        return GameNames().AddRange(GameBoostPolicy.LauncherGuard(GameCatalog.AllKnown(_services.Settings).Where(game => game.MatchesAnyProcess(running))))
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToImmutableArray();
+    }
 
     private async Task StartAsync()
     {

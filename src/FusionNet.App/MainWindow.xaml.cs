@@ -246,8 +246,9 @@ public partial class MainWindow : Window
                     if (!(await _services.GameBoost.RefreshAsync(default)).IsPending) break;
                     await Task.Delay(1000);
                 }
+                // A toast would vanish with the window, so failures on exit use a dialog the owner must dismiss.
                 if (_services.GameBoost.Status.IsPending)
-                    ToastService.Instance.Show("استرجاع Game Boost ما زال معلقًا؛ ستبقى المهمة المستقلة للمحاولة.", ToastKind.Warning);
+                    MessageBox.Show(this, "استرجاع Game Boost ما زال معلقًا؛ ستبقى المهمة المستقلة للمحاولة.", "FusionNet Pro", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             // Only a live/recovering session (or a crash-recovery journal) can lose restoration
             // work on exit. Automation merely being "armed" in STANDBY must NOT show the scary
@@ -279,7 +280,7 @@ public partial class MainWindow : Window
                     ? await _services.Fusion.DisengageAsync().ConfigureAwait(true)
                     : await _services.Fusion.RestoreInterruptedSessionAsync().ConfigureAwait(true);
                 if (!result.Success)
-                    ToastService.Instance.Show(result.Message, ToastKind.Warning);
+                    MessageBox.Show(this, result.Message, "FusionNet Pro", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             // Give the coordinator a chance to cancel/await its reconciler before the process ends.
@@ -307,6 +308,9 @@ public partial class MainWindow : Window
             }
         }
     }
+
+    /// <summary>Offline render mode: Shutdown still raises Closing, which must not ask or restore.</summary>
+    public void AllowCloseWithoutRestore() => _forceClose = true;
 
     private void Cleanup()
     {

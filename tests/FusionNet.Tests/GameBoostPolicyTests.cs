@@ -39,6 +39,14 @@ public class GameBoostPolicyTests
         Assert.NotNull(Reason(Steam(), [.. GameBoostPolicy.LauncherGuard([Game("valorant"), Game("rocket-league")])]));
         Assert.NotNull(Reason(Steam(), [.. GameBoostPolicy.LauncherGuard([])]));
     }
+    [Fact] public void CustomGameOnRiotExeCountsAsRiot() =>
+        Assert.Null(Reason(Steam(), [.. GameBoostPolicy.LauncherGuard([CustomGame.Create(@"C:\Riot Games\VALORANT\live\VALORANT.exe").ToProfile()])]));
+    [Fact] public void DisabledCustomGameStillKeepsLaunchersProtected()
+    {
+        var settings = new FusionSettings { CustomGames = [CustomGame.Create(@"C:\Games\MySteamGame.exe") with { Enabled = false }] };
+        var running = GameCatalog.AllKnown(settings).Where(game => game.MatchesAnyProcess(["VALORANT", "MySteamGame"]));
+        Assert.NotNull(Reason(Steam(), [.. GameBoostPolicy.LauncherGuard(running)]));
+    }
     [Fact] public void PreviewUsesSeparateOwnershipFromLegacyCleanup()
     {
         var preview = new GameBoostPreview(Guid.Empty, App().Identity!, DateTimeOffset.UtcNow.AddHours(1), [App().Identity!], []);
