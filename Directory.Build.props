@@ -3,9 +3,9 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>3.3.3</Version>
-    <FileVersion>3.3.3.0</FileVersion>
-    <AssemblyVersion>3.3.3.0</AssemblyVersion>
+    <Version>3.3.4</Version>
+    <FileVersion>3.3.4.0</FileVersion>
+    <AssemblyVersion>3.3.4.0</AssemblyVersion>
     <Authors>FusionNet</Authors>
     <Company>FusionNet</Company>
     <Product>FusionNet Pro</Product>

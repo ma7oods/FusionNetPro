@@ -40,7 +40,7 @@ Most scripts in `qa/` are offline checks you run with `dotnet run qa/<name>.cs`.
 
 ## Releasing a new version
 
-1. Bump the version everywhere `3.3.3` appears, mainly `Directory.Build.props`, `installer/build-installer.ps1`, `installer/FusionNet.Setup/FusionNet.Setup.csproj`, `InstallEngine.cs`, `SetupForm.cs` and `qa/release-checks.cs`. Find them all with `git grep 3.3.3`.
+1. Bump the version everywhere `3.3.4` appears, mainly `Directory.Build.props`, `installer/build-installer.ps1`, `installer/FusionNet.Setup/FusionNet.Setup.csproj`, `InstallEngine.cs`, `SetupForm.cs` and `qa/release-checks.cs`. Find them all with `git grep 3.3.4`.
 2. Commit, then push a matching tag:
    ```powershell
    git tag vX.Y.Z

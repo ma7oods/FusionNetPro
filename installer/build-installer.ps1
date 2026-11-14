@@ -19,7 +19,7 @@ try {
     $stageDir = Join-Path $root "installer\payload\stage"
     $zipPath = Join-Path $root "installer\FusionNet.Setup\payload\payload.zip"
     $distDir = Join-Path $root "dist"
-    $version = "3.3.3"
+    $version = "3.3.4"
 
     if (-not $SkipAppPublish) {
         Write-Host "== publishing self-contained app =="

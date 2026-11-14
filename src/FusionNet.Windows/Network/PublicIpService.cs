@@ -238,7 +238,7 @@ public sealed class PublicIpService : IPublicIpService
             Timeout = TimeSpan.FromSeconds(8)
         };
 
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("FusionNetPro/3.3.3");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("FusionNetPro/3.3.4");
         client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json, text/plain, */*");
         return client;
     }

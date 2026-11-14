@@ -240,7 +240,7 @@ internal static class InstallEngine
             ?? throw new InvalidOperationException("تعذّر إنشاء مفتاح إلغاء التثبيت في السجل.");
 
         key.SetValue("DisplayName", SetupPaths.ProductName);
-        key.SetValue("DisplayVersion", "3.3.3");
+        key.SetValue("DisplayVersion", "3.3.4");
         key.SetValue("Publisher", "FusionNet");
         key.SetValue("DisplayIcon", exe);
         key.SetValue("InstallLocation", installDirectory);

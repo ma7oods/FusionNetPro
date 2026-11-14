@@ -6,7 +6,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Security.Cryptography;
 
-const string version = "3.3.3";
+const string version = "3.3.4";
 var root = Path.GetFullPath(".");
 var dist = Path.Combine(root,"dist");
 var app = Path.Combine(dist,$"FusionNetPro-{version}.exe");
@@ -35,7 +35,7 @@ foreach(var name in new[]{"FusionNet.Windows.dll","FusionNet.Core.dll","FusionNe
 var appAssembly=Assembly.LoadFile(Path.Combine(dist,"app/FusionNetPro.dll"));
 using(var license=appAssembly.GetManifestResourceStream("FusionNet.App.Assets.THIRD-PARTY-NOTICES.txt") ?? throw new Exception("Standalone EXE source assembly lacks licenses."))
     Require(HashStream(license)==Hash(Path.Combine(root,"src/FusionNet.App/Assets/THIRD-PARTY-NOTICES.txt")),"Embedded notices differ.");
-Console.WriteLine("Release3.3.3 passed: 3 manifest hashes, EXE versions, portable/embedded Setup payload, notices and published/source assemblies. No EXE executed.");
+Console.WriteLine("Release 3.3.4 passed: 3 manifest hashes, EXE versions, portable/embedded Setup payload, notices and published/source assemblies. No EXE executed.");
 return 0;
 
 static string Hash(string path) { using var stream=File.OpenRead(path); return HashStream(stream); }

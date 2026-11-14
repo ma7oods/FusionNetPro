@@ -360,7 +360,7 @@ public sealed class SettingsViewModel : ViewModelBase
     // ------------------------------------------------------------------ about
     public string ProductName => AppPaths.ProductName;
 
-    public string VersionText => Loc.Format("Set.Version", SafeSystemInfo(info => info.AppVersion, "3.3.3"));
+    public string VersionText => Loc.Format("Set.Version", SafeSystemInfo(info => info.AppVersion, "3.3.4"));
 
     public string WindowsText => SafeSystemInfo(info => info.WindowsVersion, Loc.T("Common.Unknown"));
 

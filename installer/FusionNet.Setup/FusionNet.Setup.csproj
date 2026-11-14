@@ -15,9 +15,9 @@
     <!-- Load the native libraries straight from the bundle. Self-extract would stage them in
          %TEMP% on every run, so the installer could not start on a locked-down temp folder. -->
     <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
-    <Version>3.3.3</Version>
-    <FileVersion>3.3.3.0</FileVersion>
-    <AssemblyVersion>3.3.3.0</AssemblyVersion>
+    <Version>3.3.4</Version>
+    <FileVersion>3.3.4.0</FileVersion>
+    <AssemblyVersion>3.3.4.0</AssemblyVersion>
     <Product>FusionNet Pro</Product>
     <Company>FusionNet</Company>
     <Description>FusionNet Pro installer</Description>

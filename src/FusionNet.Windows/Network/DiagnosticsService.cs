@@ -23,7 +23,7 @@ namespace FusionNet.Windows.Network;
 public sealed class DiagnosticsService : IDiagnosticsService
 {
     private const string Category = "Monitor";
-    private const string AppVersionFallback = "3.3.3";
+    private const string AppVersionFallback = "3.3.4";
     private const int ProbesPerTarget = 4;
     private const string DnsTestDomain = "www.microsoft.com";
 

@@ -287,7 +287,7 @@ public sealed class ShellFixture(object page)
     public string LanguageTooltip => "تبديل اللغة";
     public string LanguageToggleText => "EN";
     public string FusionButtonText => "مراجعة Fusion المتقدم";
-    public string VersionText => "3.3.3 · UI fixture";
+    public string VersionText => "3.3.4 · UI fixture";
     public bool IsLimitedMode => true;
     public bool HasPendingRestore => false;
     public string PendingRestoreText => "لا تغييرات في fixture";

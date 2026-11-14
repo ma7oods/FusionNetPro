@@ -32,7 +32,7 @@ internal sealed class SetupForm : Form
 
     public SetupForm(SetupOptions options)
     {
-        Text = "FusionNet Pro 3.3.3 — معالج التثبيت";
+        Text = "FusionNet Pro 3.3.4 — معالج التثبيت";
         ClientSize = new Size(680, 552);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         MaximizeBox = false;
@@ -66,7 +66,7 @@ internal sealed class SetupForm : Form
         };
         var subtitle = new Label
         {
-            Text = "معالج التثبيت — الإصدار 3.3.3  •  ويندوز 10/11 (64-بت)",
+            Text = "معالج التثبيت — الإصدار 3.3.4  •  ويندوز 10/11 (64-بت)",
             Font = new Font("Segoe UI", 10F),
             ForeColor = TextMuted,
             BackColor = Color.Transparent,
