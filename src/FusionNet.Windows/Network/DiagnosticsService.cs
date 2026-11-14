@@ -7,7 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using FusionNet.Core.Abstractions;
 using FusionNet.Core.Models;
+using FusionNet.Core.Monitoring;
 using FusionNet.Core.Utilities;
+using FusionNet.Windows.Monitoring;
+using Microsoft.Win32;
 
 namespace FusionNet.Windows.Network;
 
@@ -107,10 +110,11 @@ public sealed class DiagnosticsService : IDiagnosticsService
             Task<(List<DiagnosticFinding> Findings, Dictionary<string, TargetStatistics> Statistics)> latencyTask =
                 CheckLatencyAndGatewayAsync(adapterList, cancellationToken);
             Task<List<DiagnosticFinding>> vpnTask = CheckVpnAsync(cancellationToken);
+            Task<List<DiagnosticFinding>> slownessTask = CheckSlownessAsync(cancellationToken);
 
             try
             {
-                await Task.WhenAll(new Task[] { firewallTask, dnsTask, mtuTask, servicesTask, tweaksTask, latencyTask, vpnTask })
+                await Task.WhenAll(new Task[] { firewallTask, dnsTask, mtuTask, servicesTask, tweaksTask, latencyTask, vpnTask, slownessTask })
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -122,6 +126,7 @@ public sealed class DiagnosticsService : IDiagnosticsService
             findings.AddRange(await dnsTask.ConfigureAwait(false));
             findings.AddRange(await mtuTask.ConfigureAwait(false));
             findings.AddRange(await vpnTask.ConfigureAwait(false));
+            findings.AddRange(await slownessTask.ConfigureAwait(false));
 
             var servicesResult = await servicesTask.ConfigureAwait(false);
             serviceList = servicesResult.Services;
@@ -317,6 +322,98 @@ public sealed class DiagnosticsService : IDiagnosticsService
         {
             yield return Info("System", "Disk space is unavailable",
                 "مساحة القرص غير متاحة", "The system drive free-space counter could not be read.", "Disk counters unavailable.");
+        }
+    }
+
+    // ------------------------------------------------------------------ slowness checks (read-only)
+
+    private static async Task<List<DiagnosticFinding>> CheckSlownessAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var probeTask = NetworkCommandRunner.RunAsync(WindowsLocalMonitor.PowerShellPath,
+                ["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand",
+                    Convert.ToBase64String(Encoding.Unicode.GetBytes(WindowsLocalMonitor.ReadScript("SlownessProbe.ps1")))], 20_000, cancellationToken);
+            var planTask = NetworkCommandRunner.RunAsync(NetworkCommandRunner.SystemTool("powercfg.exe"), ["/getactivescheme"], 5_000, cancellationToken);
+            var topCpu = await Task.Run(() => SampleTopCpu(cancellationToken), cancellationToken).ConfigureAwait(false);
+            var plan = await planTask.ConfigureAwait(false);
+            var probe = await probeTask.ConfigureAwait(false);
+            var guid = Regex.Match(plan.StandardOutput, "[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}").Value;
+            return SlownessPolicy.Evaluate(new SlownessSample(TimeSpan.FromMilliseconds(Environment.TickCount64),
+                guid.Length > 0 ? guid : null, CountStartupApps(), topCpu,
+                probe.Success ? SlownessPolicy.ParseProbe(probe.StandardOutput) : null)).ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            return [Info("Performance", "Slowness checks could not run", "تعذر تشغيل فحوصات البطء", ex.Message, "Slowness checks failed.")];
+        }
+    }
+
+    // Two CPU-time snapshots one second apart, grouped by app name; processes this user cannot open are skipped.
+    private static IReadOnlyList<CpuUser> SampleTopCpu(CancellationToken cancellationToken)
+    {
+        static Dictionary<int, (string Name, TimeSpan Cpu)> Snapshot()
+        {
+            var result = new Dictionary<int, (string Name, TimeSpan Cpu)>();
+            foreach (var process in Process.GetProcesses())
+            {
+                using (process)
+                {
+                    try { if (process.Id > 0) result[process.Id] = (process.ProcessName, process.TotalProcessorTime); }
+                    catch (Exception ex) when (ex is global::System.ComponentModel.Win32Exception or InvalidOperationException or NotSupportedException) { }
+                }
+            }
+            return result;
+        }
+
+        var first = Snapshot();
+        var watch = Stopwatch.StartNew();
+        cancellationToken.WaitHandle.WaitOne(1000);
+        cancellationToken.ThrowIfCancellationRequested();
+        var second = Snapshot();
+        var scale = watch.Elapsed.TotalMilliseconds * Environment.ProcessorCount / 100;
+        return second.Where(entry => first.TryGetValue(entry.Key, out var before) && before.Name == entry.Value.Name)
+            .GroupBy(entry => entry.Value.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new CpuUser(group.Key, group.Sum(entry => (entry.Value.Cpu - first[entry.Key].Cpu).TotalMilliseconds) / scale))
+            .OrderByDescending(user => user.Percent).Take(3).ToArray();
+    }
+
+    // Run keys and Startup folders, minus entries turned off in Task Manager (StartupApproved first byte is odd).
+    private static int? CountStartupApps()
+    {
+        const string approved = @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\";
+        static bool Disabled(RegistryKey? state, string name) => state?.GetValue(name) is byte[] { Length: > 0 } value && (value[0] & 1) == 1;
+        try
+        {
+            var count = 0;
+            foreach (var (hive, path, list) in new[]
+                     {
+                         (Registry.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Run", "Run"),
+                         (Registry.LocalMachine, @"Software\Microsoft\Windows\CurrentVersion\Run", "Run"),
+                         (Registry.LocalMachine, @"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run", "Run32")
+                     })
+            {
+                using var key = hive.OpenSubKey(path);
+                using var state = hive.OpenSubKey(approved + list);
+                count += key?.GetValueNames().Count(name => name.Length > 0 && !Disabled(state, name)) ?? 0;
+            }
+            foreach (var (folder, hive) in new[] { (Environment.SpecialFolder.Startup, Registry.CurrentUser), (Environment.SpecialFolder.CommonStartup, Registry.LocalMachine) })
+            {
+                var directory = Environment.GetFolderPath(folder);
+                if (directory.Length == 0 || !Directory.Exists(directory)) continue;
+                using var state = hive.OpenSubKey(approved + "StartupFolder");
+                count += Directory.EnumerateFiles(directory).Count(file =>
+                    !Path.GetFileName(file).Equals("desktop.ini", StringComparison.OrdinalIgnoreCase) && !Disabled(state, Path.GetFileName(file)));
+            }
+            return count;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or global::System.Security.SecurityException)
+        {
+            return null;
         }
     }
 
